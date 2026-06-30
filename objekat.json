@@ -1,0 +1,23 @@
+{
+  "name": "Mali Tas",
+  "city": "Beograd",
+  "address": "Beogradska 12",
+  "description": "Sportski kompleks u srcu grada.",
+  "price_per_hour": 1500.00,
+  "type": "SPORTS_CENTER",
+  "work_start_time": "08:00",
+  "work_end_time": "22:00",
+  "company_name": "Sport d.o.o.",
+  "company_address": "Ruzveltova 5",
+  "company_id_number": "12345678",
+  "pib": "102345678",
+  "courts": [
+    {
+      "court_name": "Otvoreni teren 1",
+      "sport_type": "Kosarka",
+      "type": "OPENED",
+      "capacity": 4,
+      "equipment_description": "Profesionalni kosevi, gumirana podloga."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Java / Spring Boot
+backend_SpringBoot/backend/target/
+*.class
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Env / secrets
+*.env
+application-local.properties
