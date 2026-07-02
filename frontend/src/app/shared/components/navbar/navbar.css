@@ -51,15 +51,22 @@
   border-bottom: 2px solid var(--primary-color);
 }
 
+.nav-greeting {
+  color: var(--text-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
 /* Stil za Logout dugme */
-button {
+.nav-links button {
   padding: 8px 16px;
   background-color: #ef4444; /* Crveno za logout */
   color: white !important;
   border-radius: 6px;
 }
 
-button:hover {
+.nav-links button:hover {
   background-color: #dc2626;
   color: white !important;
 }

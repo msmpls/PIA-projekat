@@ -48,6 +48,11 @@ public class AdminRepository {
         return facilities.stream().findFirst();
     }
 
+    public List<Facility> findPendingFacilities() {
+        String sql = "SELECT * FROM facilities WHERE status = 'PENDING' ORDER BY id DESC";
+        return jdbcTemplate.query(sql, new FacilityRowMapper());
+    }
+
     public List<Coach> findAllCoaches() {
         String sql = "SELECT * FROM coaches ORDER BY facility_id, name";
         return jdbcTemplate.query(sql, new CoachRowMapper());

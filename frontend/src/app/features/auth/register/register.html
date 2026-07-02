@@ -1,20 +1,122 @@
-<div class="auth-container">
-  <h2>Registracija</h2>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.6"/>
+          <path d="M12 2C12 2 8 6 8 12C8 18 12 22 12 22" stroke="white" stroke-width="1.6"/>
+          <path d="M12 2C12 2 16 6 16 12C16 18 12 22 12 22" stroke="white" stroke-width="1.6"/>
+          <path d="M2 12H22" stroke="white" stroke-width="1.6"/>
+        </svg>
+        <span>SportSphere</span>
+      </div>
+      <h2>Registracija</h2>
+    </div>
 
-  @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  }
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
 
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <input formControlName="username" placeholder="Korisničko ime">
-    <input formControlName="email" type="email" placeholder="Email">
-    <input formControlName="password" type="password" placeholder="Lozinka">
-    <input formControlName="first_name" placeholder="Ime">
-    <input formControlName="last_name" placeholder="Prezime">
-    
-    <label>Profilna slika:</label>
-    <input type="file" (change)="onFileSelected($event)" accept="image/*">
+      <p class="error form-error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
 
-    <button type="submit" [disabled]="registerForm.invalid">Registruj se</button>
-  </form>
+      <div class="form-field">
+        <input formControlName="username" placeholder="Korisničko ime">
+        <small class="error-text" *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+          <span *ngIf="registerForm.get('username')?.errors?.['required']">Korisničko ime je obavezno</span>
+          <span *ngIf="registerForm.get('username')?.errors?.['minlength']">Korisničko ime mora imati najmanje 3 karaktera</span>
+        </small>
+      </div>
+
+      <div class="form-field">
+        <input formControlName="email" type="email" placeholder="Email">
+        <small class="error-text" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          <span *ngIf="registerForm.get('email')?.errors?.['required']">Email je obavezan</span>
+          <span *ngIf="registerForm.get('email')?.errors?.['email']">Unesite validan email</span>
+        </small>
+      </div>
+
+      <div class="form-field">
+        <input formControlName="password" type="password" placeholder="Lozinka">
+        <small class="error-text" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          <span *ngIf="registerForm.get('password')?.errors?.['required']">Lozinka je obavezna</span>
+          <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Lozinka mora imati 8-12 karaktera, velika slova, brojeve i znakove (!@#$%^&amp;*)</span>
+        </small>
+      </div>
+
+      <div class="form-field">
+        <input formControlName="phone" placeholder="Telefon">
+        <small class="error-text" *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+          <span *ngIf="registerForm.get('phone')?.errors?.['required']">Telefon je obavezan</span>
+          <span *ngIf="registerForm.get('phone')?.errors?.['pattern']">Telefon mora sadržati 9-15 cifara</span>
+        </small>
+      </div>
+
+      <div class="form-field">
+        <input formControlName="first_name" placeholder="Ime">
+        <small class="error-text" *ngIf="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched">
+          Ime je obavezno
+        </small>
+      </div>
+
+      <div class="form-field">
+        <input formControlName="last_name" placeholder="Prezime">
+        <small class="error-text" *ngIf="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched">
+          Prezime je obavezno
+        </small>
+      </div>
+
+      <div class="role-selector">
+        <label>
+          <input type="radio" formControlName="role" value="ATHLETE"> Sportista
+        </label>
+        <label>
+          <input type="radio" formControlName="role" value="EMPLOYEE"> Zaposleni
+        </label>
+      </div>
+
+      <div class="form-field">
+        <label>Omiljeni sportovi</label>
+        <div class="sports-checkboxes">
+          <p class="help-text" *ngIf="sportsLoading()">Učitavanje sportova...</p>
+          <p class="help-text" *ngIf="!sports().length && !sportsLoading()">Nema dostupnih sportova</p>
+          <label *ngFor="let sport of sports()" class="checkbox-item">
+            <input
+              type="checkbox"
+              [value]="sport"
+              [checked]="isSportSelected(sport)"
+              (change)="onSportToggle($event)"
+            />
+            {{ sport }}
+          </label>
+        </div>
+        <small class="error-text" *ngIf="registerForm.get('favorite_sports')?.invalid && registerForm.get('favorite_sports')?.touched">
+          Omiljeni sportovi su obavezni
+        </small>
+      </div>
+
+      <div class="employee-section" *ngIf="registerForm.get('role')?.value === 'EMPLOYEE'">
+        <div class="form-field">
+          <input formControlName="facility_name" placeholder="Naziv objekta">
+        </div>
+        <div class="form-field">
+          <input formControlName="company_address" placeholder="Adresa sedišta">
+        </div>
+        <div class="form-field">
+          <input formControlName="company_id_number" placeholder="Matični broj (8 cifara)">
+        </div>
+        <div class="form-field">
+          <input formControlName="pib" placeholder="PIB (9 cifara)">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Profilna slika</label>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*">
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid">Registruj se</button>
+
+      <p class="register-link">
+        Već imate nalog? <a routerLink="/login">Prijavite se ovde</a>
+      </p>
+    </form>
+  </div>
 </div>

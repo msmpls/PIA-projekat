@@ -49,10 +49,10 @@ public class RegisterRequest {
     
     private String company_address;   // adresa sedišta firme (facilities.company_address)
 
-    @Pattern(regexp = "^\\d{8}$", message = "Matični broj firme mora imati tačno 8 cifara.")
+    @Pattern(regexp = "^$|^\\d{8}$", message = "Matični broj firme mora imati tačno 8 cifara.")
     private String company_id_number; // matični broj firme (facilities.company_id_number)
 
-    @Pattern(regexp = "^[1-9]\\d{8}$", message = "PIB mora imati tačno 9 cifara i ne sme počinjati nulom.")
+    @Pattern(regexp = "^$|^[1-9]\\d{8}$", message = "PIB mora imati tačno 9 cifara i ne sme počinjati nulom.")
     private String pib;               // porez id broj firme
 
 }

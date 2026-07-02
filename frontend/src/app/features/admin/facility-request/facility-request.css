@@ -1,0 +1,105 @@
+.facility-requests {
+  padding: 16px;
+}
+
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.requests-table th,
+.requests-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.detail-panel {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid #dfe3ea;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.courts-section {
+  margin-top: 16px;
+}
+
+.courts-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.courts-table th,
+.courts-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.btn-secondary,
+.btn-close {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: #4a5568;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-close {
+  background: #718096;
+}
+
+.requests-table th {
+  background: #f6f8fb;
+  text-align: left;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-approve,
+.btn-reject {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-approve {
+  background: #2f855a;
+}
+
+.btn-reject {
+  background: #c53030;
+}
+
+.error {
+  color: #c53030;
+  margin-top: 12px;
+}
+
+.empty-state {
+  margin-top: 16px;
+  color: #555;
+}

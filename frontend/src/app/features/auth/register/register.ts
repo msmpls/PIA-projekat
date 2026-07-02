@@ -1,35 +1,87 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
-export class Register {
+export class Register implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   // Fajl koji korisnik bira
   private selectedFile: File | null = null;
   errorMessage = signal<string>('');
+  sports = signal<string[]>([]);
+  sportsLoading = signal<boolean>(false);
 
-// ... u register.component.ts
-
-registerForm = this.fb.group({
+  registerForm = this.fb.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]], // Pazi na regex!
+    password: ['', [Validators.required, Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9])[A-Za-z].{7,11}$/)]],
     first_name: ['', Validators.required],
     last_name: ['', Validators.required],
-    role: ['ATHLETE', Validators.required], // <--- DODAJ OVO
-    phone: ['0610222222']
-});
+    phone: ['', [Validators.required, Validators.pattern(/^\d{9,15}$/)]],
+    role: ['ATHLETE', Validators.required],
+    favorite_sports: [[] as string[], [this.favoriteSportsValidator]],
+    facility_name: [''],
+    company_address: [''],
+    company_id_number: [''],
+    pib: ['']
+  });
+
+  get isEmployee() {
+    return this.registerForm.get('role')?.value === 'EMPLOYEE';
+  }
+
+  ngOnInit() {
+    this.loadSports();
+  }
+
+  loadSports() {
+    this.sportsLoading.set(true);
+    this.http.get<string[]>('http://localhost:8080/api/sports/names').subscribe({
+      next: names => {
+        this.sports.set(names);
+        this.sportsLoading.set(false);
+      },
+      error: () => {
+        this.sports.set([]);
+        this.sportsLoading.set(false);
+      }
+    });
+  }
+
+  favoriteSportsValidator(control: AbstractControl) {
+    const value = control.value;
+    return Array.isArray(value) && value.length > 0 ? null : { required: true };
+  }
+
+  onSportToggle(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const control = this.registerForm.get('favorite_sports') as unknown as FormControl<string[]>;
+    const currentValue = control.value ?? [];
+    const updated = input.checked
+      ? [...currentValue, input.value]
+      : currentValue.filter(sport => sport !== input.value);
+
+    control.setValue(updated);
+    control.markAsTouched();
+  }
+
+  isSportSelected(sport: string): boolean {
+    const control = this.registerForm.get('favorite_sports') as AbstractControl;
+    return Array.isArray(control.value) && control.value.includes(sport);
+  }
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
@@ -39,14 +91,42 @@ registerForm = this.fb.group({
   }
 
   onSubmit() {
-    if (this.registerForm.invalid) return;
+    this.errorMessage.set('');
+
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
     const formData = new FormData();
     const formValues = this.registerForm.value;
 
+    if (this.isEmployee) {
+      const requiredEmployeeFields = ['facility_name', 'company_address', 'company_id_number', 'pib'];
+      for (const field of requiredEmployeeFields) {
+        if (!formValues[field as keyof typeof formValues]) {
+          this.errorMessage.set('Sva polja za zaposlenog su obavezna.');
+          return;
+        }
+      }
+    }
+
     // Dodajemo polja u FormData
+    const employeeFields = ['facility_name', 'company_address', 'company_id_number', 'pib'];
     Object.keys(formValues).forEach(key => {
-      formData.append(key, formValues[key as keyof typeof formValues]!);
+      if (!this.isEmployee && employeeFields.includes(key)) {
+        return;
+      }
+
+      const value = formValues[key as keyof typeof formValues];
+      if (value === null || value === undefined || value === '') {
+        return;
+      }
+      if (Array.isArray(value)) {
+        formData.append(key, value.join(','));
+      } else {
+        formData.append(key, String(value));
+      }
     });
 
     // Dodajemo sliku ako postoji
@@ -55,8 +135,8 @@ registerForm = this.fb.group({
     }
 
     this.authService.register(formData).subscribe({
-      next: () => this.router.navigate(['/login']),
-      error: (err) => this.errorMessage.set('Došlo je do greške pri registraciji.')
+      next: () => this.router.navigate(['/pending-approval']),
+      error: (err) => this.errorMessage.set(err?.error || 'Došlo je do greške pri registraciji.')
     });
   }
 }

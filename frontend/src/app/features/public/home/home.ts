@@ -1,10 +1,11 @@
 import { Component,inject, signal } from '@angular/core';
+import { NgFor } from '@angular/common';
 import { HomeService } from './home.service';
 import { HomepageResponse } from '../../../core/models/homepage.model';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [NgFor],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

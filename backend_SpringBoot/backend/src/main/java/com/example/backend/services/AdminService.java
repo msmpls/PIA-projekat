@@ -2,10 +2,12 @@ package com.example.backend.services;
 
 import com.example.backend.dtos.AdminUserResponse;
 import com.example.backend.models.Coach;
+import com.example.backend.models.Court;
 import com.example.backend.models.Facility;
 import com.example.backend.models.Sport;
 import com.example.backend.models.User;
 import com.example.backend.repos.AdminRepository;
+import com.example.backend.repos.CourtRepository;
 import com.example.backend.repos.SportsRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +18,12 @@ import java.util.stream.Collectors;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final CourtRepository courtRepository;
     private final SportsRepository sportsRepository;
 
-    public AdminService(AdminRepository adminRepository, SportsRepository sportsRepository) {
+    public AdminService(AdminRepository adminRepository, CourtRepository courtRepository, SportsRepository sportsRepository) {
         this.adminRepository = adminRepository;
+        this.courtRepository = courtRepository;
         this.sportsRepository = sportsRepository;
     }
 
@@ -41,8 +45,12 @@ public class AdminService {
 
     public void updateUserStatus(Long userId, String status) {
         String normalizedStatus = status == null ? "" : status.trim().toUpperCase();
-        if (!"APPROVED".equals(normalizedStatus) && !"DECLINED".equals(normalizedStatus)) {
-            throw new RuntimeException("Status može biti samo APPROVED ili DECLINED.");
+        // Accept both REJECTED and DECLINED (legacy) and normalize to REJECTED
+        if ("DECLINED".equals(normalizedStatus)) {
+            normalizedStatus = "REJECTED";
+        }
+        if (!"APPROVED".equals(normalizedStatus) && !"REJECTED".equals(normalizedStatus)) {
+            throw new RuntimeException("Status može biti samo APPROVED ili REJECTED.");
         }
 
         User user = adminRepository.findUserById(userId)
@@ -67,8 +75,12 @@ public class AdminService {
 
     public void updateFacilityStatus(Long facilityId, String status) {
         String normalizedStatus = status == null ? "" : status.trim().toUpperCase();
-        if (!"APPROVED".equals(normalizedStatus) && !"DECLINED".equals(normalizedStatus)) {
-            throw new RuntimeException("Status objekta može biti samo APPROVED ili DECLINED.");
+        // Accept DECLINED for backwards compatibility, normalize to REJECTED
+        if ("DECLINED".equals(normalizedStatus)) {
+            normalizedStatus = "REJECTED";
+        }
+        if (!"APPROVED".equals(normalizedStatus) && !"REJECTED".equals(normalizedStatus)) {
+            throw new RuntimeException("Status objekta može biti samo APPROVED ili REJECTED.");
         }
 
         Facility facility = adminRepository.findFacilityById(facilityId)
@@ -82,6 +94,16 @@ public class AdminService {
         if (updated == 0) {
             throw new RuntimeException("Nije moguće ažurirati status objekta.");
         }
+    }
+
+    public List<Facility> getPendingFacilities() {
+        return adminRepository.findPendingFacilities();
+    }
+
+    public List<Court> getFacilityCourts(Long facilityId) {
+        adminRepository.findFacilityById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Objekat sa ID-jem '" + facilityId + "' nije pronađen."));
+        return courtRepository.findByFacilityIdIncludePending(facilityId);
     }
 
     public List<Coach> getAllCoaches() {

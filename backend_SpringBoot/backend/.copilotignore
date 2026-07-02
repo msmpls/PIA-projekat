@@ -1,1 +1,21 @@
+# Ignore all uploads directories (any depth) and their contents
 uploads/
+uploads/**
+**/uploads/
+**/uploads/**
+
+# Build and target folders
+**/target/**
+**/dist/**
+**/node_modules/**
+**/.gradle/**
+**/.idea/**
+**/.vscode/**
+
+# Logs and local configuration
+**/*.log
+**/.env
+
+# Sensitive/application files
+**/application.properties
+**/*.keystore

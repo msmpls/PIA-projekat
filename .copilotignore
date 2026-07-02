@@ -1,0 +1,27 @@
+# Root Copilot ignore: exclude uploads and sensitive/build files workspace-wide
+
+# Ignore any uploads directories and their contents
+uploads/
+**/uploads/
+**/uploads/**
+
+# Backend build outputs
+backend_SpringBoot/backend/target/
+**/target/
+
+# Frontend and node packages
+frontend/node_modules/
+**/node_modules/
+**/dist/
+
+# IDE and editor settings
+**/.idea/
+**/.vscode/
+
+# Logs and local configuration
+**/*.log
+**/.env
+
+# Sensitive/application files
+**/application.properties
+**/*.keystore

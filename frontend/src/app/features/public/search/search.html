@@ -1,1 +1,33 @@
-<p>search works!</p>
+<div class="search-container">
+  <form [formGroup]="form" (ngSubmit)="search()" class="search-form">
+    <h2>Pretraga sportskih objekata</h2>
+
+    <div class="field-row">
+      <input formControlName="name" placeholder="Naziv objekta">
+      <input formControlName="city" placeholder="Grad">
+      <select formControlName="type">
+        <option value="">Tip terena</option>
+        <option value="OPENED">Otvoreni</option>
+        <option value="CLOSED">Zatvoreni</option>
+      </select>
+    </div>
+
+    <button type="submit">Pretraži</button>
+  </form>
+
+  <p *ngIf="loading()">Učitavanje rezultata...</p>
+
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+
+  <p class="empty" *ngIf="results().length === 0 && !loading()">Nema rezultata. Pokušajte promeniti kriterijume.</p>
+
+  <div class="results-grid">
+    <div class="card" *ngFor="let facility of results()">
+      <h3>{{ facility.name }}</h3>
+      <p><strong>Grad:</strong> {{ facility.city }}</p>
+      <p><strong>Adresa:</strong> {{ facility.address }}</p>
+      <p><strong>Cena/sat:</strong> {{ facility.price_per_hour }}</p>
+      <p><strong>Tip:</strong> {{ facility.type }}</p>
+    </div>
+  </div>
+</div>

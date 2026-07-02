@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/facilities/{facilityId}/courts").hasRole("EMPLOYEE")
                         .requestMatchers("/api/employee/dashboard/**").hasRole("EMPLOYEE")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/facilities/*/ratings/eligibility").hasRole("ATHLETE")
+                        .requestMatchers(HttpMethod.POST, "/api/facilities/*/ratings").hasRole("ATHLETE")
                         // 4. Primeri restrikcija za admina i zaposlene (Zadrži i prilagodi za kasnije
                         // module)
                         // Npr. odobravanje objekata, menjanje statusa porudžbina iz "ORDERED" u

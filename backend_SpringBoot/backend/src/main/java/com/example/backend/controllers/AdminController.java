@@ -2,6 +2,7 @@ package com.example.backend.controllers;
 
 import com.example.backend.dtos.AdminUserResponse;
 import com.example.backend.models.Coach;
+import com.example.backend.models.Facility;
 import com.example.backend.models.Sport;
 import com.example.backend.services.AdminService;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,17 @@ public class AdminController {
     public ResponseEntity<String> deleteUser(@PathVariable("userId") Long userId) {
         adminService.deleteUser(userId);
         return ResponseEntity.ok("Korisnik je uspešno obrisan.");
+    }
+
+    @GetMapping("/facilities/pending")
+    public ResponseEntity<List<Facility>> getPendingFacilities() {
+        return ResponseEntity.ok(adminService.getPendingFacilities());
+    }
+
+    @GetMapping("/facilities/{facilityId}/courts")
+    public ResponseEntity<List<com.example.backend.models.Court>> getFacilityCourts(
+            @PathVariable("facilityId") Long facilityId) {
+        return ResponseEntity.ok(adminService.getFacilityCourts(facilityId));
     }
 
     @PutMapping("/facilities/{facilityId}/status")

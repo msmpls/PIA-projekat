@@ -47,6 +47,11 @@ public class CourtRepository {
         return jdbcTemplate.query(sql, new CourtRowMapper(), facilityId);
     }
 
+    public List<Court> findByFacilityIdIncludePending(Long facilityId) {
+        String sql = "SELECT * FROM courts WHERE facility_id = ?";
+        return jdbcTemplate.query(sql, new CourtRowMapper(), facilityId);
+    }
+
     public boolean existsByFacilityIdAndCourtName(Long facilityId, String courtName) {
         String sql = "SELECT COUNT(*) FROM courts WHERE facility_id = ? AND court_name = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, facilityId, courtName);

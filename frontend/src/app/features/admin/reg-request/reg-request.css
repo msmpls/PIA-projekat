@@ -1,0 +1,20 @@
+:root{
+	--accent:#2b6cb0;
+	--danger:#e53e3e;
+}
+.reg-requests{
+	padding:12px;
+}
+.requests-table{
+	width:100%;
+	border-collapse:collapse;
+}
+.requests-table th, .requests-table td{
+	border:1px solid #eee;
+	padding:8px 10px;
+	text-align:left;
+}
+.actions{display:flex;gap:8px}
+.btn-approve{background:var(--accent);color:#fff;padding:6px 10px;border:none;border-radius:4px}
+.btn-reject{background:var(--danger);color:#fff;padding:6px 10px;border:none;border-radius:4px}
+.error{color:var(--danger);margin:6px 0}

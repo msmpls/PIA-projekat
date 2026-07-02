@@ -1,1 +1,30 @@
-<p>reg-request works!</p>
+<div class="reg-requests">
+	<h2>Zahtevi za registraciju</h2>
+
+	<div *ngIf="loading">Učitavanje...</div>
+	<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+	<table *ngIf="!loading && pendingUsers().length > 0" class="requests-table">
+		<thead>
+			<tr>
+				<th>Korisnik</th>
+				<th>Ime</th>
+				<th>E-mail</th>
+				<th>Akcije</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let u of pendingUsers()">
+				<td>{{ u.username }}</td>
+				<td>{{ u.first_name }} {{ u.last_name }}</td>
+				<td>{{ u.email }}</td>
+				<td class="actions">
+					<button class="btn-approve" (click)="respond(u.id, 'APPROVED')">Odobri</button>
+					<button class="btn-reject" (click)="respond(u.id, 'REJECTED')">Odbij</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div *ngIf="!loading && pendingUsers().length === 0">Nema novih zahteva.</div>
+</div>

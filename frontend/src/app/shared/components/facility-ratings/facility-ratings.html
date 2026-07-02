@@ -1,0 +1,65 @@
+<div class="ratings-widget">
+  <div class="ratings-summary">
+    <div class="reaction-badge like">
+      <span class="icon">👍</span>
+      <span class="count">{{ summary()?.likes ?? 0 }}</span>
+    </div>
+    <div class="reaction-badge dislike">
+      <span class="icon">👎</span>
+      <span class="count">{{ summary()?.dislikes ?? 0 }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="isAthlete" class="rating-form-section">
+    <div *ngIf="eligibility() as e">
+      <form *ngIf="e.canRate; else notEligible" [formGroup]="form" (ngSubmit)="submit()" class="rating-form">
+        <div class="like-toggle">
+          <button type="button"
+                  class="toggle-btn"
+                  [class.active]="form.value.is_like === true"
+                  (click)="form.patchValue({ is_like: true })">
+            👍 Sviđa mi se
+          </button>
+          <button type="button"
+                  class="toggle-btn"
+                  [class.active]="form.value.is_like === false"
+                  (click)="form.patchValue({ is_like: false })">
+            👎 Ne sviđa mi se
+          </button>
+        </div>
+        <textarea formControlName="comment" placeholder="Ostavite komentar (opciono)" maxlength="500" rows="3"></textarea>
+        <button type="submit" [disabled]="form.invalid">Pošalji ocenu</button>
+        <p class="hint">Preostalo ocena: {{ e.confirmedReservations - e.usedRatings }}</p>
+      </form>
+      <ng-template #notEligible>
+        <p class="hint" *ngIf="e.confirmedReservations === 0">
+          Ocenu možete ostaviti tek nakon što imate bar jednu potvrđenu rezervaciju u ovom objektu.
+        </p>
+        <p class="hint" *ngIf="e.confirmedReservations > 0">
+          Iskoristili ste sve dostupne ocene za ovaj objekat ({{ e.usedRatings }}/{{ e.confirmedReservations }}).
+        </p>
+      </ng-template>
+    </div>
+
+    <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    <p class="success" *ngIf="successMessage()">{{ successMessage() }}</p>
+  </div>
+
+  <div class="comments-section">
+    <h4>Poslednji komentari</h4>
+    <p class="hint" *ngIf="!loading() && (summary()?.lastComments?.length ?? 0) === 0">
+      Još uvek nema komentara za ovaj objekat.
+    </p>
+    <div *ngFor="let c of summary()?.lastComments"
+         class="comment-card"
+         [class.own-comment]="c.username === currentUsername">
+      <div class="comment-header">
+        <span class="comment-author">{{ c.username }}</span>
+        <span class="comment-reaction" [class.like]="c.is_like" [class.dislike]="!c.is_like">
+          {{ c.is_like ? '👍' : '👎' }}
+        </span>
+      </div>
+      <p class="comment-text">{{ c.comment }}</p>
+    </div>
+  </div>
+</div>

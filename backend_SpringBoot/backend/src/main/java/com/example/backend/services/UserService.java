@@ -185,7 +185,7 @@ public class UserService {
 
                 Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-                String savedImagePath = "/uploads/" + uniqueFileName;
+                String savedImagePath = "/uploads/profiles/" + uniqueFileName;
                 user.setProfile_picture_path(savedImagePath);
 
             } catch (Exception e) {
@@ -319,7 +319,7 @@ public class UserService {
 
             // 6. Putanja koju ćemo upisati u bazu i koju će Angular koristiti da prikaže
             // sliku
-            String imagePath = "/uploads/" + uniqueFileName;
+            String imagePath = "/uploads/profiles/" + uniqueFileName;
 
             // 7. Upisujemo taj string u bazu podataka
             userRepository.updateProfileImage(username, imagePath);

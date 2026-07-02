@@ -1,0 +1,91 @@
+<section class="admin-users">
+  <div class="page-header">
+    <div>
+      <h2>Administracija korisnika</h2>
+      <p>Pregled, odobravanje i brisanje registrovanih korisnika sistema.</p>
+    </div>
+    <button class="refresh-button" (click)="loadUsers()" [disabled]="loading">
+      {{ loading ? 'Osvežavam...' : 'Osveži listu' }}
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <label class="search-field">
+      Pretraga
+      <input
+        type="text"
+        placeholder="Pretraži po korisničkom imenu, imenu ili e-mailu"
+        [(ngModel)]="searchTerm"
+        (input)="applyFilter()"
+      />
+    </label>
+
+    <label class="filter-field">
+      Filter po statusu
+      <select [(ngModel)]="statusFilter" (change)="applyFilter()">
+        <option value="">Svi statusi</option>
+        <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+      </select>
+    </label>
+  </div>
+
+  <div *ngIf="errorMessage" class="notification error">{{ errorMessage }}</div>
+
+  <div *ngIf="loading" class="loading-state">Učitavanje podataka...</div>
+
+  <div *ngIf="!loading" class="table-wrapper">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Avatar</th>
+          <th>Korisnik</th>
+          <th>Kontakt</th>
+          <th>Uloga</th>
+          <th>Status</th>
+          <th>Omiljeni sportovi</th>
+          <th>Akcije</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers()">
+          <td>{{ user.id }}</td>
+          <td class="avatar-cell">
+            <div class="avatar" *ngIf="user.profile_picture_path; else initials">
+              <img
+                [src]="buildProfileImageUrl(user.profile_picture_path)"
+                alt="Avatar {{ user.username }}"
+                (error)="onProfileImageError(user)"
+              />
+            </div>
+            <ng-template #initials>
+              <div class="avatar avatar-placeholder">{{ user.username.charAt(0) | uppercase }}</div>
+            </ng-template>
+          </td>
+          <td>
+            <div class="user-name">{{ user.username }}</div>
+            <div class="user-meta">{{ user.first_name }} {{ user.last_name }}</div>
+          </td>
+          <td>
+            <div>{{ user.email }}</div>
+            <div class="user-meta">{{ user.phone || '—' }}</div>
+          </td>
+          <td>{{ user.role || '—' }}</td>
+          <td>
+            <select #statusSelect [value]="user.status" (change)="updateStatus(user, statusSelect.value)">
+              <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+            </select>
+          </td>
+          <td>{{ user.favorite_sports || '—' }}</td>
+          <td class="actions-cell">
+            <button class="btn btn-delete" (click)="confirmDelete(user)">Obriši</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!filteredUsers().length" class="empty-state">
+      Nema korisnika za prikaz. Pokušajte drugi filter ili osvežite listu.
+    </div>
+  </div>
+</section>

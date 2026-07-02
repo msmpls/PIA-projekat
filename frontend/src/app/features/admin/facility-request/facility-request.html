@@ -1,1 +1,109 @@
-<p>facility-request works!</p>
+<div class="facility-requests">
+  <h2>Zahtevi za objekte</h2>
+
+  <div *ngIf="loading()">Učitavanje zahteva...</div>
+  <div *ngIf="errorMessage()" class="error">{{ errorMessage() }}</div>
+
+  <table *ngIf="!loading() && facilities().length > 0" class="requests-table">
+    <thead>
+      <tr>
+        <th>Objekat</th>
+        <th>Grad</th>
+        <th>Adresa</th>
+        <th>Kompanija</th>
+        <th>Status</th>
+        <th>Akcije</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let facility of facilities()">
+        <td>{{ facility.name }}</td>
+        <td>{{ facility.city }}</td>
+        <td>{{ facility.address }}</td>
+        <td>{{ facility.company_name }}</td>
+        <td>{{ facility.status }}</td>
+        <td class="actions">
+          <button class="btn-secondary" (click)="selectFacility(facility)">Detalji</button>
+          <button class="btn-approve" (click)="respond(facility.id, 'APPROVED')">Odobri</button>
+          <button class="btn-reject" (click)="respond(facility.id, 'REJECTED')">Odbij</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="selectedFacility()" class="detail-panel">
+    <div class="detail-header">
+      <h3>Detalji zahteva: {{ selectedFacility()?.name }}</h3>
+      <button class="btn-close" (click)="closeDetails()">Zatvori</button>
+    </div>
+
+    <div *ngIf="detailErrorMessage()" class="error">
+      {{ detailErrorMessage() }}
+    </div>
+
+    <div *ngIf="selectedFacility()" class="detail-grid">
+      <div>
+        <strong>Adresa:</strong> {{ selectedFacility()?.address }}
+      </div>
+      <div>
+        <strong>Grad:</strong> {{ selectedFacility()?.city }}
+      </div>
+      <div>
+        <strong>Tip:</strong> {{ selectedFacility()?.type }}
+      </div>
+      <div>
+        <strong>Cena / sat:</strong> {{ selectedFacility()?.price_per_hour }}
+      </div>
+      <div>
+        <strong>Radno vreme:</strong> {{ selectedFacility()?.work_start_time }} - {{ selectedFacility()?.work_end_time }}
+      </div>
+      <div>
+        <strong>Opis:</strong> {{ selectedFacility()?.description }}
+      </div>
+      <div>
+        <strong>Kompanija:</strong> {{ selectedFacility()?.company_name }}
+      </div>
+      <div>
+        <strong>PIB:</strong> {{ selectedFacility()?.pib }}
+      </div>
+      <div>
+        <strong>Adresa kompanije:</strong> {{ selectedFacility()?.company_address }}
+      </div>
+      <div>
+        <strong>ID br. kompanije:</strong> {{ selectedFacility()?.company_id_number }}
+      </div>
+    </div>
+
+    <div class="courts-section">
+      <h4>Terene u zahtevu</h4>
+      <div *ngIf="detailLoading()">Učitavanje terena...</div>
+      <div *ngIf="!detailLoading() && selectedCourts().length === 0" class="empty-state">
+        Nema unetih terena za ovaj objekat.
+      </div>
+      <table *ngIf="!detailLoading() && selectedCourts().length > 0" class="courts-table">
+        <thead>
+          <tr>
+            <th>Naziv terena</th>
+            <th>Sport</th>
+            <th>Tip</th>
+            <th>Kapacitet</th>
+            <th>Oprema</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let court of selectedCourts()">
+            <td>{{ court.court_name }}</td>
+            <td>{{ court.sport_type }}</td>
+            <td>{{ court.type }}</td>
+            <td>{{ court.capacity }}</td>
+            <td>{{ court.equipment_description }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && facilities().length === 0" class="empty-state">
+    Nema novih zahteva za odobravanje.
+  </div>
+</div>
