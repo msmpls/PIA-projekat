@@ -25,22 +25,25 @@ public class UserRepository {
      * Koristi se klasičan INSERT upit sa "placeholderima" (?) zbog sprečavanja SQL
      * Injection napada.
      */
-    public int save(User user) {
-        String sql = "INSERT INTO users (username, password_hash, email, first_name, last_name, phone, role, status, favorite_sports) "
-                +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+public int save(User user) {
+    // 1. Dodajemo kolonu u listu
+    // 2. Dodajemo '?' u VALUES listu
+    String sql = "INSERT INTO users (username, password_hash, email, first_name, last_name, phone, role, status, favorite_sports, profile_picture_path) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
-        return jdbcTemplate.update(sql,
-                user.getUsername(),
-                user.getPassword_hash(),
-                user.getEmail(),
-                user.getFirst_name(),
-                user.getLast_name(),
-                user.getPhone(),
-                user.getRole(),
-                user.getStatus(),
-                user.getFavorite_sports());
-    }
+    // 3. Dodajemo user.getProfile_picture_path() kao argument
+    return jdbcTemplate.update(sql,
+            user.getUsername(),
+            user.getPassword_hash(),
+            user.getEmail(),
+            user.getFirst_name(),
+            user.getLast_name(),
+            user.getPhone(),
+            user.getRole(),
+            user.getStatus(),
+            user.getFavorite_sports(),
+            user.getProfile_picture_path()); // <--- DODATO
+}
 
     /**
      * 2. PRONALAŽENJE KORISNIKA PO USERNAME-U (Login i JWT provera)

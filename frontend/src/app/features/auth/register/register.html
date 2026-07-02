@@ -1,0 +1,20 @@
+<div class="auth-container">
+  <h2>Registracija</h2>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <input formControlName="username" placeholder="Korisničko ime">
+    <input formControlName="email" type="email" placeholder="Email">
+    <input formControlName="password" type="password" placeholder="Lozinka">
+    <input formControlName="first_name" placeholder="Ime">
+    <input formControlName="last_name" placeholder="Prezime">
+    
+    <label>Profilna slika:</label>
+    <input type="file" (change)="onFileSelected($event)" accept="image/*">
+
+    <button type="submit" [disabled]="registerForm.invalid">Registruj se</button>
+  </form>
+</div>

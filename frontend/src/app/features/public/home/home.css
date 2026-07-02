@@ -1,0 +1,67 @@
+/* Glavni kontejner stranice */
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Sekcija za statistiku (Baner) */
+.stats-banner {
+  background-color: #2563eb; /* Sportska plava */
+  color: white;
+  padding: 3rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stats-banner h1 {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+/* Grid za Top 3 objekta */
+.top-facilities-grid {
+  display: grid;
+  /* Ovo znači: pravi kolone široke bar 300px, koliko god stane u red */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Stil kartice */
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Efekat "lebdenja" kad pređeš mišem */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.card p {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* Responsivnost za mobilne telefone */
+@media (max-width: 600px) {
+  .stats-banner {
+    padding: 1.5rem;
+  }
+  
+  .stats-banner h1 {
+    font-size: 1.8rem;
+  }
+}

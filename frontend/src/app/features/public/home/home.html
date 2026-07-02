@@ -1,0 +1,20 @@
+<div class="home-container">
+  
+  <div class="stats-banner">
+    <h1>Ukupno aktivnih objekata: {{ homeData()!.totalFacilities }}</h1>
+  </div>
+
+  <h2>Najpopularniji objekti</h2>
+
+  <div class="top-facilities-grid">
+    @for (facility of homeData()!.topFacilities; track facility.id) {
+      <div class="card">
+        <h3>{{ facility.name }}</h3>
+        <p><strong>Grad:</strong> {{ facility.city }}</p>
+        <p><strong>Tip:</strong> {{ facility.type }}</p>
+        <p><strong>Cena/sat:</strong> {{ facility.price_per_hour }} RSD</p>
+      </div>
+    }
+  </div>
+
+</div>
