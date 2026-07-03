@@ -35,13 +35,13 @@
     <!-- Tabs -->
     <div class="tabs">
       <button (click)="setTab('info')" [class.active]="activeTab() === 'info'">Lični podaci</button>
-      <button (click)="setTab('reservations')" [class.active]="activeTab() === 'reservations'">
+      <button *ngIf="isAthlete" (click)="setTab('reservations')" [class.active]="activeTab() === 'reservations'">
         Rezervacije ({{ reservations().length }})
       </button>
-      <button (click)="setTab('trainings')" [class.active]="activeTab() === 'trainings'">
+      <button *ngIf="isAthlete" (click)="setTab('trainings')" [class.active]="activeTab() === 'trainings'">
         Treninzi ({{ trainings().length }})
       </button>
-      <button (click)="setTab('orders')" [class.active]="activeTab() === 'orders'">
+      <button *ngIf="isAthlete" (click)="setTab('orders')" [class.active]="activeTab() === 'orders'">
         Porudžbine ({{ orders().length }})
       </button>
     </div>
@@ -89,8 +89,8 @@
         </div>
       </div>
 
-      <!-- Favorite sports -->
-      <div class="card">
+      <!-- Favorite sports (athletes only) -->
+      <div class="card" *ngIf="isAthlete">
         <div class="card-header">
           <h3>Omiljeni sportovi</h3>
           <button *ngIf="!editingSports()" (click)="editingSports.set(true)" class="edit-btn">Izmeni</button>
@@ -137,7 +137,7 @@
                 <td>{{ r.court_name_number }}</td>
                 <td>{{ r.sport }}</td>
                 <td>{{ r.reservation_date | date:'dd.MM.yyyy' }}</td>
-                <td>{{ r.start_time | date:'HH:mm' }}–{{ r.end_time | date:'HH:mm' }}</td>
+                <td>{{ formatTime(r.start_time) }}–{{ formatTime(r.end_time) }}</td>
                 <td>
                   <span class="status-badge" [class.pending]="r.status === 'PENDING'"
                         [class.confirmed]="r.status === 'CONFIRMED'"
@@ -182,7 +182,7 @@
                 <td>{{ t.court_name }}</td>
                 <td>{{ t.sport }}</td>
                 <td>{{ t.training_date | date:'dd.MM.yyyy' }}</td>
-                <td>{{ t.start_time | date:'HH:mm' }}–{{ t.end_time | date:'HH:mm' }}</td>
+                <td>{{ formatTime(t.start_time) }}–{{ formatTime(t.end_time) }}</td>
                 <td>
                   <span class="status-badge" [class.confirmed]="t.status === 'SCHEDULED'"
                         [class.completed]="t.status === 'COMPLETED'"

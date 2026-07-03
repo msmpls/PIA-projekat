@@ -117,12 +117,14 @@
           <div class="cal-cell cal-hour-label">{{ hourLabel(hour) }}</div>
           <div *ngFor="let day of weekDays()"
                class="cal-cell cal-slot"
-               [class.occupied]="isSlotOccupied(day.dateStr, hour)"
+               [class.occupied-confirmed]="getSlotStatus(day.dateStr, hour) === 'CONFIRMED'"
+               [class.occupied-pending]="getSlotStatus(day.dateStr, hour) === 'PENDING'"
                [class.selected]="isSlotSelected(day.dateStr, hour)"
                [class.past]="isSlotPast(day.dateStr, hour)"
                [class.clickable]="isAthlete && !isSlotOccupied(day.dateStr, hour) && !isSlotPast(day.dateStr, hour)"
                (click)="clickSlot(day.dateStr, hour)">
-            <span *ngIf="isSlotOccupied(day.dateStr, hour)" class="slot-text">Zauzeto</span>
+            <span *ngIf="getSlotStatus(day.dateStr, hour) === 'CONFIRMED'" class="slot-text">Zauzeto</span>
+            <span *ngIf="getSlotStatus(day.dateStr, hour) === 'PENDING'" class="slot-text">Čeka</span>
             <span *ngIf="isSlotSelected(day.dateStr, hour)" class="slot-text">✓ Izabrano</span>
           </div>
         </ng-container>
@@ -131,7 +133,8 @@
       <!-- Legend -->
       <div class="legend">
         <span class="legend-item"><span class="legend-box free"></span> Slobodno</span>
-        <span class="legend-item"><span class="legend-box occupied"></span> Zauzeto</span>
+        <span class="legend-item"><span class="legend-box confirmed"></span> Zauzeto (potvrđeno)</span>
+        <span class="legend-item"><span class="legend-box pending"></span> Čeka odobrenje</span>
         <span class="legend-item"><span class="legend-box selected"></span> Izabrano</span>
         <span class="legend-item"><span class="legend-box past"></span> Prošlo</span>
       </div>

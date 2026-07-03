@@ -33,7 +33,7 @@ export class FacilityDetails implements OnInit {
   // Calendar state
   currentCourtIndex = signal(0);
   weekOffset = signal(0); // 0 = current week, -1 = previous, 1 = next
-  occupiedSlots = signal<Map<string, boolean>>(new Map()); // key = "YYYY-MM-DD_HH:00"
+  occupiedSlots = signal<Map<string, string>>(new Map()); // key = "YYYY-MM-DD_HH:00", value = "CONFIRMED" or "PENDING"
   calendarLoading = signal(false);
   selectedSlot = signal<{ date: string; startHour: number } | null>(null);
   reservationMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -165,7 +165,7 @@ export class FacilityDetails implements OnInit {
     if (!court) return;
     this.calendarLoading.set(true);
     const days = this.weekDays();
-    const newMap = new Map<string, boolean>();
+    const newMap = new Map<string, string>();
 
     let completed = 0;
     const total = days.length;
@@ -177,7 +177,7 @@ export class FacilityDetails implements OnInit {
             const startHour = parseInt(r.start_time.split(':')[0]);
             const endHour = parseInt(r.end_time.split(':')[0]);
             for (let h = startHour; h < endHour; h++) {
-              newMap.set(`${day.dateStr}_${h}:00`, true);
+              newMap.set(`${day.dateStr}_${h}:00`, r.status); // "CONFIRMED" or "PENDING"
             }
           }
           completed++;
@@ -195,6 +195,10 @@ export class FacilityDetails implements OnInit {
         },
       });
     }
+  }
+
+  getSlotStatus(dateStr: string, hour: number): string | null {
+    return this.occupiedSlots().get(`${dateStr}_${hour}:00`) ?? null;
   }
 
   isSlotOccupied(dateStr: string, hour: number): boolean {

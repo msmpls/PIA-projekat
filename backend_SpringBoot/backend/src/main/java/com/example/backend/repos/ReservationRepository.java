@@ -99,12 +99,12 @@ public class ReservationRepository {
     }
 
     // Pomoćna metoda za interaktivni kalendar (da Angular zna šta je zauzeto za taj
-    // dan)
+    // dan) - vraca i CONFIRMED i PENDING da bi se prikazali razlicitim bojama
     public List<Reservation> findAllByCourtIdAndDate(Long courtId, String date) {
         String sql = "SELECT r.* FROM reservations r " +
                 "JOIN courts c ON r.court_id = c.id " +
                 "JOIN facilities f ON c.facility_id = f.id " +
-                "WHERE r.court_id = ? AND reservation_date = ? AND status = 'CONFIRMED' " +
+                "WHERE r.court_id = ? AND reservation_date = ? AND status IN ('CONFIRMED','PENDING') " +
                 "AND f.status = 'APPROVED'";
         return jdbcTemplate.query(sql, new ReservationRowMapper(), courtId, date);
     }

@@ -15,37 +15,38 @@ public class BookingRepository {
     }
 
     
-    // 1. TABELA ZA CHECK-IN (Samo CONFIRMED rezervacije i SCHEDULED treninzi)
+    // 1. TABELA ZA CHECK-IN (Samo CONFIRMED rezervacije i SCHEDULED treninzi za DANAS)
     public List<ReservationViewResponse> getDashboardForEmployee(Long employeeId) {
     String sql =
-            // 1. Obične rezervacije
+            // 1. Obične rezervacije - samo za danas
             "SELECT r.id, 'RESERVATION' AS type, CONCAT(u.first_name, ' ', u.last_name) AS user_name, " +
             "r.court_id, co.court_name, NULL AS coach_name, r.reservation_date AS b_date, r.start_time, r.end_time, r.status " +
             "FROM reservations r " +
             "JOIN courts co ON r.court_id = co.id " +
             "JOIN facilities f ON co.facility_id = f.id " +
-            "JOIN facility_employees fe ON f.id = fe.facility_id " + // <--- DODATO
+            "JOIN facility_employees fe ON f.id = fe.facility_id " +
             "JOIN users u ON r.user_id = u.id " +
-            "WHERE fe.user_id = ? AND r.status = 'CONFIRMED' " +   // <--- PROMENJENO
+            "WHERE fe.user_id = ? AND r.status = 'CONFIRMED' " +
             "AND f.status = 'APPROVED' " +
+            "AND r.reservation_date = CURDATE() " +
 
             "UNION ALL " +
 
-            // 2. Individualni treninzi
+            // 2. Individualni treninzi - samo za danas
             "SELECT t.id, 'TRAINING' AS type, CONCAT(u.first_name, ' ', u.last_name) AS user_name, " +
             "t.court_id, co.court_name, ch.name AS coach_name, t.training_date AS b_date, t.start_time, t.end_time, t.status " +
             "FROM trainings t " +
             "JOIN courts co ON t.court_id = co.id " +
             "JOIN facilities f ON co.facility_id = f.id " +
-            "JOIN facility_employees fe ON f.id = fe.facility_id " + // <--- DODATO
+            "JOIN facility_employees fe ON f.id = fe.facility_id " +
             "JOIN users u ON t.user_id = u.id " +
             "JOIN coaches ch ON t.coach_id = ch.id " +
-            "WHERE fe.user_id = ? AND t.status = 'SCHEDULED' " +    // <--- PROMENJENO
+            "WHERE fe.user_id = ? AND t.status = 'SCHEDULED' " +
             "AND f.status = 'APPROVED' " +
+            "AND t.training_date = CURDATE() " +
 
-            "ORDER BY b_date DESC, start_time DESC";
+            "ORDER BY start_time ASC";
     return jdbcTemplate.query(sql, (rs, rowNum) -> {
-        // ... (ostatak mapiranja ostaje isti)
         ReservationViewResponse res = new ReservationViewResponse();
         res.setId(rs.getLong("id"));
         res.setType(rs.getString("type"));
@@ -67,7 +68,7 @@ public class BookingRepository {
         boolean isToday = today.equals(bookingDate);
         boolean withinTenMinutes = !now.isBefore(startTime) && !now.isAfter(deadline);
         boolean isStatusActive = "CONFIRMED".equals(res.getStatus()) || "SCHEDULED".equals(res.getStatus());
-        
+
         res.setActionAllowed(isStatusActive && isToday && withinTenMinutes);
 
         return res;

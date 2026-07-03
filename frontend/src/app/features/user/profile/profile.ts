@@ -32,6 +32,9 @@ export class Profile implements OnInit {
   activeTab = signal<'info' | 'reservations' | 'trainings' | 'orders'>('info');
   message = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Athlete-only: hide reservations/trainings/orders tabs for employees
+  isAthlete = this.authService.getRole() === 'ATHLETE';
+
   // Edit mode
   editing = signal(false);
   editForm = this.fb.nonNullable.group({
@@ -247,6 +250,11 @@ export class Profile implements OnInit {
 
   setTab(tab: 'info' | 'reservations' | 'trainings' | 'orders'): void {
     this.activeTab.set(tab);
+  }
+
+  formatTime(t: string): string {
+    if (!t) return '';
+    return t.length >= 5 ? t.substring(0, 5) : t;
   }
 
   private showMessage(type: 'success' | 'error', text: string): void {

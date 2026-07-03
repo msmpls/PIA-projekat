@@ -93,21 +93,24 @@ h3 { color: #1e293b; font-size: 1.15rem; margin: 0 0 1rem; }
 .cal-day-header.is-today { background: rgba(37,99,235,0.1); color: #2563eb; }
 .cal-hour-label { background: #f8fafc; font-weight: 600; color: #64748b; }
 .cal-slot { cursor: default; transition: background 0.15s; }
-.cal-slot.clickable { cursor: pointer; background: rgba(34,197,94,0.05); }
-.cal-slot.clickable:hover { background: rgba(37,99,235,0.15); }
-.cal-slot.occupied { background: rgba(239,68,68,0.12); }
+.cal-slot.clickable { cursor: pointer; background: rgba(34,197,94,0.08); }
+.cal-slot.clickable:hover { background: rgba(37,99,235,0.2); }
+.cal-slot.occupied-confirmed { background: rgba(239,68,68,0.35); }
+.cal-slot.occupied-pending { background: rgba(245,158,11,0.35); }
 .cal-slot.selected { background: #2563eb !important; }
 .cal-slot.past { background: #f1f5f9; opacity: 0.5; }
 .slot-text { font-size: 0.72rem; font-weight: 600; }
-.cal-slot.occupied .slot-text { color: #b91c1c; }
+.cal-slot.occupied-confirmed .slot-text { color: #b91c1c; }
+.cal-slot.occupied-pending .slot-text { color: #b45309; }
 .cal-slot.selected .slot-text { color: white; }
 
 /* Legend */
 .legend { display: flex; gap: 1rem; margin-top: 0.75rem; flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: #64748b; }
 .legend-box { width: 16px; height: 16px; border-radius: 0.25rem; }
-.legend-box.free { background: rgba(34,197,94,0.05); border: 1px solid #e2e8f0; }
-.legend-box.occupied { background: rgba(239,68,68,0.12); }
+.legend-box.free { background: rgba(34,197,94,0.08); border: 1px solid #e2e8f0; }
+.legend-box.confirmed { background: rgba(239,68,68,0.35); }
+.legend-box.pending { background: rgba(245,158,11,0.35); }
 .legend-box.selected { background: #2563eb; }
 .legend-box.past { background: #f1f5f9; }
 
