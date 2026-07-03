@@ -1,0 +1,50 @@
+<div class="stats-container">
+  <h2>Statistika</h2>
+
+  <p *ngIf="loading()" class="loading">Učitavanje statistike...</p>
+
+  <ng-container *ngIf="!loading() && data() as d">
+    <!-- Total spending card -->
+    <div class="card spending-card">
+      <div class="spending-label">Ukupna potrošnja na opremu</div>
+      <div class="spending-amount">{{ d.totalSpendingOnEquipment | number: '1.0-0' }} RSD</div>
+    </div>
+
+    <!-- Bar chart: reservations per sport -->
+    <div class="card">
+      <h3>Rezervacije po sportu</h3>
+      <div *ngIf="d.reservationsBySport.length > 0; else noSports">
+        <div class="bar-row" *ngFor="let item of d.reservationsBySport">
+          <span class="bar-label">{{ item.sport }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" [style.width.%]="(item.count / maxSportCount()) * 100"></div>
+            <span class="bar-count">{{ item.count }}</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noSports><p class="empty-text">Nema podataka</p></ng-template>
+    </div>
+
+    <!-- Line chart: monthly activity -->
+    <div class="card">
+      <h3>Mesečna aktivnost</h3>
+      <div *ngIf="d.monthlyActivity.length > 0; else noMonthly">
+        <svg class="line-chart" viewBox="0 0 600 250" preserveAspectRatio="xMidYMid meet" role="img"
+             aria-label="Mesečna aktivnost grafikon">
+          <!-- Axes -->
+          <line class="axis" x1="40" y1="210" x2="580" y2="210" />
+          <line class="axis" x1="40" y1="20" x2="40" y2="210" />
+          <!-- Trend line -->
+          <polyline [attr.points]="buildLinePoints()" />
+          <!-- Points + labels -->
+          <g *ngFor="let p of linePointsList()">
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" />
+            <text class="count-label" [attr.x]="p.x" [attr.y]="p.y - 8" text-anchor="middle">{{ p.count }}</text>
+            <text class="axis-label" [attr.x]="p.x" y="230" text-anchor="middle">{{ p.label }}</text>
+          </g>
+        </svg>
+      </div>
+      <ng-template #noMonthly><p class="empty-text">Nema podataka</p></ng-template>
+    </div>
+  </ng-container>
+</div>

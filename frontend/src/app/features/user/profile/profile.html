@@ -1,1 +1,242 @@
-<p>profile works!</p>
+<div class="profile-container">
+  <!-- Loading -->
+  <p *ngIf="loading()" class="loading">Učitavanje profila...</p>
+
+  <div *ngIf="profile() as p" class="profile-content">
+    <!-- Message toast -->
+    <div *ngIf="message()" class="toast" [class.success]="message()!.type === 'success'" [class.error]="message()!.type === 'error'">
+      {{ message()!.text }}
+    </div>
+
+    <!-- Header with profile picture -->
+    <div class="profile-header">
+      <div class="avatar-section">
+        <div class="avatar">
+          <img *ngIf="getProfileImageUrl(); else noImg" [src]="getProfileImageUrl()" [alt]="p.username">
+          <ng-template #noImg>
+            <div class="avatar-placeholder">{{ p.first_name.charAt(0).toUpperCase() }}{{ p.last_name.charAt(0).toUpperCase() }}</div>
+          </ng-template>
+        </div>
+        <div class="avatar-actions">
+          <label class="upload-btn">
+            Promeni sliku
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+          </label>
+          <button *ngIf="selectedFile()" (click)="uploadImage()" class="save-img-btn">Sačuvaj</button>
+        </div>
+      </div>
+      <div class="header-info">
+        <h1>{{ p.first_name }} {{ p.last_name }}</h1>
+        <p class="username">@{{ p.username }}</p>
+        <p class="role-badge">{{ p.role }}</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button (click)="setTab('info')" [class.active]="activeTab() === 'info'">Lični podaci</button>
+      <button (click)="setTab('reservations')" [class.active]="activeTab() === 'reservations'">
+        Rezervacije ({{ reservations().length }})
+      </button>
+      <button (click)="setTab('trainings')" [class.active]="activeTab() === 'trainings'">
+        Treninzi ({{ trainings().length }})
+      </button>
+      <button (click)="setTab('orders')" [class.active]="activeTab() === 'orders'">
+        Porudžbine ({{ orders().length }})
+      </button>
+    </div>
+
+    <!-- Tab: Info -->
+    <div *ngIf="activeTab() === 'info'" class="tab-content">
+      <!-- Personal data -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Lični podaci</h3>
+          <button *ngIf="!editing()" (click)="startEdit()" class="edit-btn">Izmeni</button>
+        </div>
+
+        <form *ngIf="editing()" [formGroup]="editForm" (ngSubmit)="saveEdit()" class="edit-form">
+          <div class="form-grid">
+            <div class="field">
+              <label>Ime</label>
+              <input formControlName="first_name">
+            </div>
+            <div class="field">
+              <label>Prezime</label>
+              <input formControlName="last_name">
+            </div>
+            <div class="field">
+              <label>Telefon</label>
+              <input formControlName="phone">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input formControlName="email" type="email">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Sačuvaj</button>
+            <button type="button" (click)="cancelEdit()" class="cancel-btn">Odustani</button>
+          </div>
+        </form>
+
+        <div *ngIf="!editing()" class="info-grid">
+          <div class="info-row"><span class="label">Korisničko ime:</span> <span>{{ p.username }}</span></div>
+          <div class="info-row"><span class="label">Ime:</span> <span>{{ p.first_name }}</span></div>
+          <div class="info-row"><span class="label">Prezime:</span> <span>{{ p.last_name }}</span></div>
+          <div class="info-row"><span class="label">Telefon:</span> <span>{{ p.phone }}</span></div>
+          <div class="info-row"><span class="label">Email:</span> <span>{{ p.email }}</span></div>
+        </div>
+      </div>
+
+      <!-- Favorite sports -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Omiljeni sportovi</h3>
+          <button *ngIf="!editingSports()" (click)="editingSports.set(true)" class="edit-btn">Izmeni</button>
+        </div>
+        <div *ngIf="!editingSports()" class="sports-display">
+          <span *ngIf="p.favorite_sports" class="sport-tags">
+            <span *ngFor="let s of p.favorite_sports.split(',')" class="sport-tag">{{ s.trim() }}</span>
+          </span>
+          <span *ngIf="!p.favorite_sports" class="empty-text">Nema izabranih sportova.</span>
+        </div>
+        <div *ngIf="editingSports()" class="sports-edit">
+          <input [(value)]="sportsInput" placeholder="npr. Tenis, Kosarka, Fudbal" class="sports-input">
+          <p class="hint">Unesite sportove razdvojene zarezom.</p>
+          <div class="form-actions">
+            <button (click)="saveSports()" class="primary-btn">Sačuvaj</button>
+            <button (click)="editingSports.set(false)" class="cancel-btn">Odustani</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Reservations -->
+    <div *ngIf="activeTab() === 'reservations'" class="tab-content">
+      <div class="card">
+        <h3>Moje rezervacije</h3>
+        <div class="table-wrapper" *ngIf="sortedReservations().length > 0; else noRes">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th (click)="toggleSort('facility_name')" class="sortable">Objekat {{ sortIcon('facility_name') }}</th>
+                <th (click)="toggleSort('city')" class="sortable">Grad {{ sortIcon('city') }}</th>
+                <th (click)="toggleSort('court_name_number')" class="sortable">Teren {{ sortIcon('court_name_number') }}</th>
+                <th (click)="toggleSort('sport')" class="sortable">Sport {{ sortIcon('sport') }}</th>
+                <th (click)="toggleSort('reservation_date')" class="sortable">Datum {{ sortIcon('reservation_date') }}</th>
+                <th (click)="toggleSort('start_time')" class="sortable">Termin {{ sortIcon('start_time') }}</th>
+                <th (click)="toggleSort('status')" class="sortable">Status {{ sortIcon('status') }}</th>
+                <th>Akcija</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of sortedReservations()">
+                <td>{{ r.facility_name }}</td>
+                <td>{{ r.city }}</td>
+                <td>{{ r.court_name_number }}</td>
+                <td>{{ r.sport }}</td>
+                <td>{{ r.reservation_date | date:'dd.MM.yyyy' }}</td>
+                <td>{{ r.start_time | date:'HH:mm' }}–{{ r.end_time | date:'HH:mm' }}</td>
+                <td>
+                  <span class="status-badge" [class.pending]="r.status === 'PENDING'"
+                        [class.confirmed]="r.status === 'CONFIRMED'"
+                        [class.cancelled]="r.status === 'CANCELLED'"
+                        [class.completed]="r.status === 'COMPLETED'">
+                    {{ r.status }}
+                  </span>
+                </td>
+                <td>
+                  <button *ngIf="canCancelReservation(r)" (click)="cancelReservation(r.id)" class="cancel-btn-sm">Otkaži</button>
+                  <span *ngIf="!canCancelReservation(r)" class="text-muted">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noRes><p class="empty-text">Nemate rezervacija.</p></ng-template>
+      </div>
+    </div>
+
+    <!-- Tab: Trainings -->
+    <div *ngIf="activeTab() === 'trainings'" class="tab-content">
+      <div class="card">
+        <h3>Moji treninzi</h3>
+        <div class="table-wrapper" *ngIf="trainings().length > 0; else noTrain">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Trener</th>
+                <th>Objekat</th>
+                <th>Teren</th>
+                <th>Sport</th>
+                <th>Datum</th>
+                <th>Termin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of trainings()">
+                <td>{{ t.coach_name }}</td>
+                <td>{{ t.facility_name }}</td>
+                <td>{{ t.court_name }}</td>
+                <td>{{ t.sport }}</td>
+                <td>{{ t.training_date | date:'dd.MM.yyyy' }}</td>
+                <td>{{ t.start_time | date:'HH:mm' }}–{{ t.end_time | date:'HH:mm' }}</td>
+                <td>
+                  <span class="status-badge" [class.confirmed]="t.status === 'SCHEDULED'"
+                        [class.completed]="t.status === 'COMPLETED'"
+                        [class.cancelled]="t.status === 'CANCELLED'">
+                    {{ t.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noTrain><p class="empty-text">Nemate zakazanih treninga.</p></ng-template>
+      </div>
+    </div>
+
+    <!-- Tab: Orders -->
+    <div *ngIf="activeTab() === 'orders'" class="tab-content">
+      <div class="card">
+        <h3>Moje porudžbine</h3>
+        <div class="table-wrapper" *ngIf="orders().length > 0; else noOrd">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Broj</th>
+                <th>Datum</th>
+                <th>Stavke</th>
+                <th>Ukupno</th>
+                <th>Status</th>
+                <th>Akcija</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let o of orders()">
+                <td>#{{ o.id }}</td>
+                <td>{{ o.order_date | date:'dd.MM.yyyy HH:mm' }}</td>
+                <td class="items-cell">{{ o.items_summary }}</td>
+                <td>{{ o.total_price | number:'1.0-0' }} RSD</td>
+                <td>
+                  <span class="status-badge" [class.pending]="o.status === 'ORDERED'"
+                        [class.confirmed]="o.status === 'DELIVERED'"
+                        [class.cancelled]="o.status === 'CANCELLED'">
+                    {{ o.status }}
+                  </span>
+                </td>
+                <td>
+                  <button *ngIf="o.status === 'ORDERED'" (click)="cancelOrder(o.id)" class="cancel-btn-sm">Otkaži</button>
+                  <span *ngIf="o.status !== 'ORDERED'" class="text-muted">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noOrd><p class="empty-text">Nemate porudžbina.</p></ng-template>
+      </div>
+    </div>
+  </div>
+</div>

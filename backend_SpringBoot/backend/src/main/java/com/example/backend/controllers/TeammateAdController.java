@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ads")
@@ -92,5 +93,15 @@ public ResponseEntity<List<AdResponse>> getActiveAds(Principal principal) {
     public ResponseEntity<String> closeAd(@PathVariable Long adId, Principal principal) {
         adService.closeAdManually(adId, principal.getName());
         return ResponseEntity.ok("Oglas je uspešno zatvoren.");
+    }
+
+    /**
+     * 7. PREGLED OGLASA NA KOJE SE KORISNIK VEC PRIJAVIO
+     * Vraca listu {ad_id, status} para da frontend zna da sakrije "Prijavi se" dugme.
+     * GET http://localhost:8080/api/ads/my-responses
+     */
+    @GetMapping("/my-responses")
+    public ResponseEntity<List<Map<String, Object>>> getMyResponses(Principal principal) {
+        return ResponseEntity.ok(adService.getMyResponses(principal.getName()));
     }
 }

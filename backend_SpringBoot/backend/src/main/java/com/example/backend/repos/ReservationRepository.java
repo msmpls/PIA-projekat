@@ -42,11 +42,33 @@ public class ReservationRepository {
         return jdbcTemplate.update(sql, status, id);
     }
 
+    /**
+     * Azurira datum i vreme rezervacije (koristi se za drag-and-drop pomeranje).
+     */
+    public int updateDateTime(Long id, String date, String startTime, String endTime) {
+        String sql = "UPDATE reservations SET reservation_date = ?, start_time = ?, end_time = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, date, startTime, endTime, id);
+    }
+
     public boolean existsOverlapping(Long courtId, String date, String startTime, String endTime) {
         String sql = "SELECT COUNT(*) FROM reservations " +
                 "WHERE court_id = ? AND reservation_date = ? AND status = 'CONFIRMED' " +
                 "AND (start_time < ? AND end_time > ?)";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, courtId, date, endTime, startTime);
+        return count != null && count > 0;
+    }
+
+    /**
+     * Provera preklapanja koja isključuje rezervaciju sa datim ID-om.
+     * Koristi se prilikom odobravanja PENDING rezervacije da se osigura da
+     * nema već potvrđene rezervacije za isti termin.
+     */
+    public boolean existsOverlappingExcluding(Long courtId, String date, String startTime, String endTime, Long excludeId) {
+        String sql = "SELECT COUNT(*) FROM reservations " +
+                "WHERE court_id = ? AND reservation_date = ? AND status = 'CONFIRMED' " +
+                "AND id <> ? " +
+                "AND (start_time < ? AND end_time > ?)";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, courtId, date, excludeId, endTime, startTime);
         return count != null && count > 0;
     }
 

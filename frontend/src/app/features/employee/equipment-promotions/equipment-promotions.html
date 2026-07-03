@@ -1,0 +1,175 @@
+<div class="ep-container">
+  <h2>Oprema i promocije</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast" [class.success]="message()!.type === 'success'" [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button (click)="activeTab.set('equipment')" [class.active]="activeTab() === 'equipment'">Oprema</button>
+    <button (click)="activeTab.set('promotions')" [class.active]="activeTab() === 'promotions'">Promocije</button>
+  </div>
+
+  <!-- Equipment tab -->
+  <div *ngIf="activeTab() === 'equipment'" class="tab-content">
+    <!-- Sport filter pills -->
+    <div class="pills">
+      <button *ngFor="let s of sports()" (click)="selectSport(s)"
+              class="pill" [class.active]="selectedSport() === s">{{ s }}</button>
+    </div>
+
+    <!-- Add equipment form -->
+    <div class="card">
+      <h3>Dodaj opremu</h3>
+      <form [formGroup]="equipmentForm" (ngSubmit)="addEquipment()" class="ep-form">
+        <div class="form-grid">
+          <div class="field">
+            <label>Naziv</label>
+            <input type="text" formControlName="name">
+          </div>
+          <div class="field">
+            <label>Cena</label>
+            <input type="number" formControlName="price" min="0" step="0.01">
+          </div>
+          <div class="field">
+            <label>Zaliha</label>
+            <input type="number" formControlName="stock" min="0">
+          </div>
+          <div class="field">
+            <label>Sport</label>
+            <select formControlName="sportType">
+              <option value="" disabled>Izaberite sport</option>
+              <option *ngFor="let s of sports()" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Slika</label>
+            <input type="file" accept="image/*" (change)="onFileSelected($event)">
+          </div>
+          <div class="field field-full">
+            <label>Opis</label>
+            <textarea formControlName="description" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn" [disabled]="equipmentForm.invalid">Dodaj opremu</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Equipment table -->
+    <div class="card">
+      <h3>Oprema ({{ selectedSport() }})</h3>
+      <p class="empty-text" *ngIf="loading()">Učitavanje...</p>
+      <div class="table-wrapper" *ngIf="!loading() && equipmentList().length > 0; else noEq">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Slika</th>
+              <th>Naziv</th>
+              <th>Sport</th>
+              <th>Cena</th>
+              <th>Zaliha</th>
+              <th>Akcija</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let eq of equipmentList()">
+              <td>
+                <img *ngIf="getImageUrl(eq); else noImg" [src]="getImageUrl(eq)!" [alt]="eq.name" class="thumb">
+                <ng-template #noImg><div class="thumb-placeholder">Nema slike</div></ng-template>
+              </td>
+              <td>{{ eq.name }}</td>
+              <td>{{ eq.sport_type }}</td>
+              <td>{{ eq.price | number:'1.2-2' }}</td>
+              <td>{{ eq.stock_quantity }}</td>
+              <td class="action-cell">
+                <button (click)="updatePrice(eq.id)" class="edit-btn-sm">Promeni cenu</button>
+                <button (click)="updateStock(eq.id)" class="edit-btn-sm">Promeni zalihu</button>
+                <button (click)="deleteEquipment(eq.id)" class="delete-btn-sm">Obrisi</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noEq><p class="empty-text">Nema opreme za izabrani sport.</p></ng-template>
+    </div>
+  </div>
+
+  <!-- Promotions tab -->
+  <div *ngIf="activeTab() === 'promotions'" class="tab-content">
+    <div class="card">
+      <h3>Dodaj promociju</h3>
+      <form [formGroup]="promotionForm" (ngSubmit)="addPromotion()" class="ep-form">
+        <div class="form-grid">
+          <div class="field">
+            <label>Naziv</label>
+            <input type="text" formControlName="name">
+          </div>
+          <div class="field">
+            <label>Popust (%)</label>
+            <input type="number" formControlName="discount_percent" min="0" max="100">
+          </div>
+          <div class="field">
+            <label>Sport</label>
+            <select formControlName="sport_type">
+              <option value="" disabled>Izaberite sport</option>
+              <option *ngFor="let s of sports()" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Početak</label>
+            <input type="date" formControlName="start_date">
+          </div>
+          <div class="field">
+            <label>Kraj</label>
+            <input type="date" formControlName="end_date">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn" [disabled]="promotionForm.invalid">Dodaj promociju</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Promocije</h3>
+      <div class="table-wrapper" *ngIf="promotions().length > 0; else noPromo">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Naziv</th>
+              <th>Popust (%)</th>
+              <th>Sport</th>
+              <th>Period</th>
+              <th>Aktivan</th>
+              <th>Akcija</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of promotions()">
+              <td>{{ p.name }}</td>
+              <td>{{ p.discount_percent }}</td>
+              <td>{{ p.sport_type }}</td>
+              <td>{{ p.start_date }} - {{ p.end_date }}</td>
+              <td>
+                <span (click)="toggleActive(p)" class="status-badge clickable"
+                      [class.active-badge]="p.is_active"
+                      [class.inactive-badge]="!p.is_active"
+                      [title]="p.is_active ? 'Klikni za deaktivaciju' : 'Klikni za aktivaciju'">
+                  {{ p.is_active ? 'Aktivna' : 'Neaktivna' }}
+                </span>
+              </td>
+              <td>
+                <button (click)="deletePromotion(p.id)" class="delete-btn-sm">Obrisi</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noPromo><p class="empty-text">Nema promocija.</p></ng-template>
+    </div>
+  </div>
+</div>

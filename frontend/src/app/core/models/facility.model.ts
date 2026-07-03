@@ -39,4 +39,6 @@ export interface Facility {
   pib: string;
   work_start_time: string;
   work_end_time: string;
+  sports?: string; // GROUP_CONCAT iz bekenda (za pretragu)
+  likes?: number;  // Za top 3 na homepage
 }

@@ -66,5 +66,16 @@ public class CourtRepository {
         return count != null && count > 0;
     }
 
+    /**
+     * Vraca facility_id za dati court_id.
+     */
+    public Long getFacilityIdByCourtId(Long courtId) {
+        String sql = "SELECT facility_id FROM courts WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, Long.class, courtId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

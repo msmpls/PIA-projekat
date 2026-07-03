@@ -4,8 +4,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.backend.dtos.AdminUserResponse;
 import com.example.backend.dtos.EmployeeProfileResponse;
+import com.example.backend.models.User;
 import com.example.backend.services.UserService;
+import com.example.backend.repos.UserRepository;
 import java.security.Principal;
 import java.util.Map;
 
@@ -15,9 +18,24 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
+    }
+
+    // PREGLED SOPSTVENOG PROFILA (sportista ili bilo koji ulogovani korisnik)
+    @GetMapping("/profile")
+    public ResponseEntity<AdminUserResponse> getMyProfile(Principal principal) {
+        User user = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Korisnik nije pronađen."));
+        AdminUserResponse resp = new AdminUserResponse(
+                user.getId(), user.getUsername(), user.getEmail(),
+                user.getFirst_name(), user.getLast_name(), user.getPhone(),
+                user.getRole(), user.getStatus(), user.getProfile_picture_path(),
+                user.getFavorite_sports());
+        return ResponseEntity.ok(resp);
     }
 
     // aziriranje ličnih podataka (ime, prezime, telefon, email)

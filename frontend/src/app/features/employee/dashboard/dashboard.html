@@ -1,0 +1,92 @@
+<div class="dashboard-container">
+  <h2>Radna ploča</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast"
+       [class.success]="message()!.type === 'success'"
+       [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <!-- Card 1: Check-in tabela -->
+  <div class="card">
+    <div class="card-head">
+      <h3>Današnja check-in tabela</h3>
+      <button (click)="refresh()" class="refresh-btn" *ngIf="!loading()">Osveži</button>
+    </div>
+
+    <div class="table-wrapper" *ngIf="checkInItems().length > 0; else noCheckIn">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tip</th>
+            <th>Korisnik</th>
+            <th>Teren</th>
+            <th>Trener</th>
+            <th>Datum</th>
+            <th>Termin</th>
+            <th>Status</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of checkInItems()">
+            <td>
+              <span class="type-badge" [class.reservation]="item.type === 'RESERVATION'" [class.training]="item.type === 'TRAINING'">
+                {{ item.type === 'RESERVATION' ? 'Rezervacija' : 'Trening' }}
+              </span>
+            </td>
+            <td>{{ item.userName }}</td>
+            <td>{{ item.courtName }}</td>
+            <td>{{ item.coachName || '—' }}</td>
+            <td>{{ formatDate(item.date) }}</td>
+            <td>{{ formatTime(item.startTime) }} - {{ formatTime(item.endTime) }}</td>
+            <td>{{ item.status }}</td>
+            <td>
+              <div class="action-cell">
+                <button (click)="confirmCheckIn(item)" class="action-btn green" [disabled]="!item.actionAllowed">Potvrdi</button>
+                <button (click)="rejectCheckIn(item)" class="action-btn red" [disabled]="!item.actionAllowed">Odjavi</button>
+                <span class="hint" *ngIf="!item.actionAllowed">Samo 10 min pre početka</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noCheckIn><p class="empty-text">Nema termina za danas.</p></ng-template>
+  </div>
+
+  <!-- Card 2: Rezervacije na čekanju -->
+  <div class="card">
+    <h3>Rezervacije na čekanju</h3>
+
+    <div class="table-wrapper" *ngIf="pendingItems().length > 0; else noPending">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Korisnik</th>
+            <th>Teren</th>
+            <th>Datum</th>
+            <th>Termin</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of pendingItems()">
+            <td>{{ item.userName }}</td>
+            <td>{{ item.courtName }}</td>
+            <td>{{ formatDate(item.date) }}</td>
+            <td>{{ formatTime(item.startTime) }} - {{ formatTime(item.endTime) }}</td>
+            <td>
+              <div class="action-cell">
+                <button (click)="approvePending(item)" class="action-btn green">Odobri</button>
+                <button (click)="rejectPending(item)" class="action-btn red">Odbij</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noPending><p class="empty-text">Nema rezervacija na čekanju.</p></ng-template>
+  </div>
+</div>

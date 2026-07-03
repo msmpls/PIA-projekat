@@ -1,0 +1,46 @@
+<div class="reports-container">
+  <h2>Izveštaji</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast"
+       [class.success]="message()!.type === 'success'"
+       [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <h3>Mesečni izveštaji</h3>
+
+    <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+      <div class="field">
+        <label for="month">Mesec</label>
+        <input id="month" type="month" formControlName="month" />
+      </div>
+
+      <button type="button"
+              class="download-btn primary"
+              (click)="downloadCourtUsage()"
+              [disabled]="loading1()">
+        <span class="icon">📄</span>
+        <span *ngIf="!loading1()">Preuzmi izveštaj o popunjenosti terena</span>
+        <span *ngIf="loading1()">Generiše se izveštaj...</span>
+      </button>
+
+      <button type="button"
+              class="download-btn secondary"
+              (click)="downloadEquipmentSales()"
+              [disabled]="loading2()">
+        <span class="icon">📄</span>
+        <span *ngIf="!loading2()">Preuzmi izveštaj o prometu opreme</span>
+        <span *ngIf="loading2()">Generiše se izveštaj...</span>
+      </button>
+
+      <p *ngIf="loading1() || loading2()" class="loading-text">
+        Preuzimanje u toku, molimo sačekajte...
+      </p>
+
+      <p class="hint">Izveštaji se generišu za izabrani mesec u PDF formatu.</p>
+    </form>
+  </div>
+</div>

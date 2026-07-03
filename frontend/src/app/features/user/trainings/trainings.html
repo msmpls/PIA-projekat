@@ -1,0 +1,164 @@
+<div class="trainings-container">
+  <h2>Individualni treninzi</h2>
+
+  <!-- Toast -->
+  @if (message()) {
+    <div class="toast" [class.success]="message()?.type === 'success'" [class.error]="message()?.type === 'error'">
+      {{ message()?.text }}
+    </div>
+  }
+
+  <div class="grid">
+    <!-- LEFT: Booking form -->
+    <div class="card">
+      <h3>Zakazi trening</h3>
+
+      <div class="field">
+        <label for="facility">Objekat</label>
+        <select
+          id="facility"
+          (change)="selectedFacility.set(+$any($event.target).value); onFacilityChange()">
+          <option [value]="0">— Izaberite objekat —</option>
+          @for (f of facilities(); track f.id) {
+            <option [value]="f.id">{{ f.name }} ({{ f.city }})</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="sport">Sport</label>
+        <select
+          id="sport"
+          (change)="selectedSport.set($any($event.target).value); onSportChange()">
+          <option value="">— Izaberite sport —</option>
+          @for (s of sports(); track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Coach cards -->
+      @if (coaches().length > 0) {
+        <div class="coach-list">
+          <p class="hint">Kliknite na trenera da ga izaberete:</p>
+          @for (c of coaches(); track c.id) {
+            <div
+              class="coach-card"
+              [class.selected]="selectedCoachId() === c.id"
+              (click)="selectCoach(c)">
+              <div class="coach-info">
+                <span class="coach-name">{{ c.name }}</span>
+                <span class="coach-spec">{{ c.specialization }}</span>
+              </div>
+              <div class="coach-meta">
+                <span class="coach-rating">★ {{ c.average_rating.toFixed(1) || '0.0' }}</span>
+                <span class="coach-price">{{ c.price_per_hour }} RSD/h</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="bookTraining()">
+        <div class="field">
+          <label for="coach">Trener</label>
+          <select id="coach" formControlName="coach">
+            <option [value]="0">— Izaberite trenera —</option>
+            @for (c of coaches(); track c.id) {
+              <option [value]="c.id">{{ c.name }} ({{ c.specialization }})</option>
+            }
+          </select>
+          @if (form.controls.coach.touched && form.controls.coach.invalid) {
+            <small class="err">Izaberite trenera.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="court">Teren</label>
+          <select id="court" formControlName="court">
+            <option [value]="0">— Izaberite teren —</option>
+            @for (c of courts(); track c.id) {
+              <option [value]="c.id">{{ c.court_name }} ({{ c.sport_type }})</option>
+            }
+          </select>
+          @if (form.controls.court.touched && form.controls.court.invalid) {
+            <small class="err">Izaberite teren.</small>
+          }
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="date">Datum</label>
+            <input id="date" type="date" [min]="today" formControlName="training_date" />
+            @if (form.controls.training_date.touched && form.controls.training_date.invalid) {
+              <small class="err">Izaberite datum.</small>
+            }
+          </div>
+          <div class="field">
+            <label for="start">Vreme početka</label>
+            <input id="start" type="time" formControlName="start_time" />
+            @if (form.controls.start_time.touched && form.controls.start_time.invalid) {
+              <small class="err">Obavezno.</small>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="end">Vreme završetka</label>
+          <input id="end" type="time" formControlName="end_time" />
+          @if (form.controls.end_time.touched && form.controls.end_time.invalid) {
+            <small class="err">Obavezno.</small>
+          }
+        </div>
+
+        <button type="submit" class="primary-btn" [disabled]="submitting()">
+          {{ submitting() ? 'Zakazivanje...' : 'Zakazi trening' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- RIGHT: Training history -->
+    <div class="card">
+      <h3>Istorija treninga</h3>
+
+      @if (myTrainings().length === 0) {
+        <p class="empty-text">Nemate zakazanih treninga.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Trener</th>
+                <th>Objekat</th>
+                <th>Teren</th>
+                <th>Sport</th>
+                <th>Datum</th>
+                <th>Termin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of myTrainings(); track t.id) {
+                <tr>
+                  <td>{{ t.coach_name }}</td>
+                  <td>{{ t.facility_name }}</td>
+                  <td>{{ t.court_name }}</td>
+                  <td>{{ t.sport }}</td>
+                  <td>{{ t.training_date }}</td>
+                  <td>{{ formatTime(t.start_time) }} - {{ formatTime(t.end_time) }}</td>
+                  <td>
+                    <span class="status-badge" [class.scheduled]="t.status === 'SCHEDULED'"
+                      [class.completed]="t.status === 'COMPLETED'"
+                      [class.cancelled]="t.status === 'CANCELLED'">
+                      {{ statusLabel(t.status) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

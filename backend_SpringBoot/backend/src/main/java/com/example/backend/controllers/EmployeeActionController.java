@@ -75,8 +75,12 @@ public ResponseEntity<List<ReservationViewResponse>> getCalendarData(
     public ResponseEntity<String> handleApproval(
             @RequestParam("id") Long id,
             @RequestParam("approve") boolean approve) {
-        
-        employeeBookingService.processPendingApproval(id, approve);
+
+        try {
+            employeeBookingService.processPendingApproval(id, approve);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         String poruka = approve ? "Rezervacija odobrena (CONFIRMED)." : "Rezervacija odbijena (CANCELLED).";
         return ResponseEntity.ok(poruka);
     }
@@ -84,15 +88,21 @@ public ResponseEntity<List<ReservationViewResponse>> getCalendarData(
     // 1. Pregled svih narudžbina opreme (da zaposleni vidi šta je naručeno)
     @GetMapping("/orders")
     public ResponseEntity<List<OrderResponse>> getAllOrdersForStaff() {
-        // Ovde ćeš napraviti metodu u servisu koja vraća sve narudžbine
         return ResponseEntity.ok(employeeShopService.getAllOrders());
     }
 
-    // 2. Akcija: Zaposleni označava narudžbinu kao DELIVERED
+    // 1a. Prihvatanje narudžbine (ORDERED -> ACCEPTED)
+    @PutMapping("/orders/{orderId}/accept")
+    public ResponseEntity<String> acceptOrder(@PathVariable Long orderId) {
+        employeeShopService.acceptOrder(orderId);
+        return ResponseEntity.ok("Narudžbina " + orderId + " je prihvaćena (ACCEPTED).");
+    }
+
+    // 2. Akcija: Zaposleni označava narudžbinu kao DELIVERED (preuzeto)
     @PutMapping("/orders/{orderId}/deliver")
     public ResponseEntity<String> markOrderAsDelivered(@PathVariable Long orderId) {
         employeeShopService.markOrderAsDelivered(orderId);
-        return ResponseEntity.ok("Narudžbina " + orderId + " je uspešno isporučena (DELIVERED).");
+        return ResponseEntity.ok("Narudžbina " + orderId + " je preuzeta (DELIVERED).");
     }
 
     // 3. Akcija: Zaposleni otkazuje narudžbinu (ako npr. kupac odustane)
@@ -100,5 +110,21 @@ public ResponseEntity<List<ReservationViewResponse>> getCalendarData(
     public ResponseEntity<String> cancelOrderAsStaff(@PathVariable Long orderId) {
         employeeShopService.cancelOrderAsStaff(orderId);
         return ResponseEntity.ok("Narudžbina " + orderId + " je otkazana i zalihe su vraćene.");
+    }
+
+    // 6. POMERANJE REZERVACIJE (drag-and-drop u kalendaru)
+    // PUT /api/employee/dashboard/move?reservationId=5&newDate=2026-07-05&newStartTime=14:00:00&newEndTime=15:00:00
+    @PutMapping("/move")
+    public ResponseEntity<String> moveReservation(
+            @RequestParam("reservationId") Long reservationId,
+            @RequestParam("newDate") String newDate,
+            @RequestParam("newStartTime") String newStartTime,
+            @RequestParam("newEndTime") String newEndTime) {
+        try {
+            employeeBookingService.moveReservation(reservationId, newDate, newStartTime, newEndTime);
+            return ResponseEntity.ok("Rezervacija je uspešno pomerena.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -162,4 +162,14 @@ public class TeammateAdService {
 
         adRepository.updateAdStatus(adId, "CLOSED");
     }
+
+    /**
+     * Vraca listu oglasa na koje se korisnik prijavio, sa statusom prijave.
+     * Format: [{ad_id, status}] gde je status PENDING / APPROVED / REJECTED.
+     */
+    public List<Map<String, Object>> getMyResponses(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Korisnik nije pronađen."));
+        return adRepository.findResponsesByUserId(user.getId());
+    }
 }

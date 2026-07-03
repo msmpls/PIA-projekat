@@ -7,3 +7,12 @@ export interface Promotion {
   end_date: string;
   is_active: boolean;
 }
+
+// Kratak prikaz promocije za pocetnu stranicu (camelCase iz bekenda)
+export interface PromotionSummary {
+  promotionName: string;
+  sportType: string;
+  startDate: string;
+  endDate: string;
+  discountPercent: number;
+}

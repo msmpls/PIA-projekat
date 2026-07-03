@@ -60,8 +60,83 @@
   .stats-banner {
     padding: 1.5rem;
   }
-  
+
   .stats-banner h1 {
     font-size: 1.8rem;
   }
+}
+
+/* Promocije sekcija */
+.promotions-section {
+  margin-top: 3rem;
+}
+
+.promotions-section h2 {
+  color: #0f172a;
+  margin-bottom: 1.5rem;
+}
+
+.promotions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.promo-card {
+  display: flex;
+  align-items: stretch;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.promo-discount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2563eb;
+  color: white;
+  padding: 1rem;
+  min-width: 70px;
+}
+
+.discount-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.promo-info {
+  padding: 1rem;
+  flex: 1;
+}
+
+.promo-info h3 {
+  margin: 0 0 0.35rem;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.promo-facility {
+  color: #475569;
+  font-size: 0.85rem;
+  margin: 0.15rem 0;
+}
+
+.promo-period {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin: 0.15rem 0 0;
+}
+
+.no-promos {
+  color: #64748b;
+  margin-top: 2rem;
+}
+
+/* Likes prikaz na kartici */
+.card .likes {
+  color: #15803d;
+  font-weight: 600;
+  font-size: 0.85rem;
 }

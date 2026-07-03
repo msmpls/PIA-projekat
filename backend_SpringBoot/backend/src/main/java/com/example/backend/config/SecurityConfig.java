@@ -50,6 +50,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/trainings/coaches").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/shop/catalog").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/sports/**").permitAll()
+                        // Javni prikaz zauzetih termina za teren (koristi ga i neregistrovani korisnik)
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/court/**").permitAll()
 
                         // 3. Rute koje su ekskluzivne za sportiste ('ATHLETE')
                         // Zakazivanje treninga, naručivanje iz korpe, otkazivanje porudžbine i pregled
@@ -62,10 +64,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/shop/orders/*/cancel").hasRole("ATHLETE")
                         .requestMatchers("/api/ads/**").hasRole("ATHLETE")
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/users/profile/employee/").hasRole("EMPLOYEE")
+                        // Rezervacije: kreiranje i otkazivanje isključivo za sportiste
+                        .requestMatchers(HttpMethod.POST, "/api/reservations").hasRole("ATHLETE")
+                        .requestMatchers(HttpMethod.PUT, "/api/reservations/*/cancel").hasRole("ATHLETE")
+                        .requestMatchers("/api/reservations/my").hasRole("ATHLETE")
+                        .requestMatchers("/api/users/profile/employee").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.POST, "/api/facilities/create").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.POST, "/api/facilities/{facilityId}/courts").hasRole("EMPLOYEE")
                         .requestMatchers("/api/employee/dashboard/**").hasRole("EMPLOYEE")
+                        .requestMatchers("/api/employee/promotions/**").hasRole("EMPLOYEE")
+                        .requestMatchers("/api/employee/reports/**").hasRole("EMPLOYEE")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/facilities/*/ratings/eligibility").hasRole("ATHLETE")
                         .requestMatchers(HttpMethod.POST, "/api/facilities/*/ratings").hasRole("ATHLETE")

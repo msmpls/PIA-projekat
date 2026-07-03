@@ -72,4 +72,14 @@ public class TeammateAdRepository {
         String sql = "SELECT creator_id, status FROM teammate_ads WHERE id = ?";
         return jdbcTemplate.queryForMap(sql, adId);
     }
+
+    /**
+     * Vraca listu oglasa na koje je korisnik vec poslao zahtev,
+     * sa statusom svog zahteva (PENDING / APPROVED / REJECTED).
+     * Koristi se da frontend zna da sakrije "Prijavi se" dugme.
+     */
+    public List<Map<String, Object>> findResponsesByUserId(Long userId) {
+        String sql = "SELECT ad_id, status FROM teammate_ad_responses WHERE user_id = ?";
+        return jdbcTemplate.queryForList(sql, userId);
+    }
 }

@@ -1,1 +1,161 @@
-<p>facility-details works!</p>
+<div class="details-container">
+  <p *ngIf="loading()" class="loading">Učitavanje detalja objekta...</p>
+
+  <div *ngIf="error()" class="error-box">
+    <p class="error">{{ error() }}</p>
+    <button (click)="goBack()" class="back-btn">← Nazad na pretragu</button>
+  </div>
+
+  <div *ngIf="details() as d" class="details-content">
+    <button (click)="goBack()" class="back-btn">← Nazad na pretragu</button>
+
+    <!-- Header -->
+    <div class="facility-header">
+      <h1>{{ d.facility.name }}</h1>
+      <p class="facility-location">📍 {{ d.facility.city }}, {{ d.facility.address }}</p>
+    </div>
+
+    <!-- Gallery -->
+    <div class="gallery-section" *ngIf="d.galleryImages?.length">
+      <div class="gallery-main">
+        <img [src]="selectedImage()" [alt]="d.facility.name" class="main-image">
+      </div>
+      <div class="gallery-thumbs" *ngIf="d.galleryImages.length > 1">
+        <img *ngFor="let img of d.galleryImages" [src]="img" [alt]="d.facility.name"
+             class="thumb" [class.active]="selectedImage() === img" (click)="selectImage(img)">
+      </div>
+    </div>
+
+    <!-- Info grid -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Osnovne informacije</h3>
+        <div class="info-row"><span class="label">Grad:</span> <span>{{ d.facility.city }}</span></div>
+        <div class="info-row"><span class="label">Adresa:</span> <span>{{ d.facility.address }}</span></div>
+        <div class="info-row"><span class="label">Tip:</span> <span>{{ d.facility.type === 'OPENED' ? 'Otvoreni' : (d.facility.type === 'CLOSED' ? 'Zatvoreni' : d.facility.type) }}</span></div>
+        <div class="info-row"><span class="label">Cena/sat:</span> <span class="price">{{ d.facility.price_per_hour }} RSD</span></div>
+        <div class="info-row"><span class="label">Radno vreme:</span> <span>{{ d.facility.work_start_time }} – {{ d.facility.work_end_time }}</span></div>
+      </div>
+      <div class="info-card">
+        <h3>Reakcije korisnika</h3>
+        <div class="reactions">
+          <div class="reaction like"><span class="icon">👍</span><span class="count">{{ d.likes }}</span><span class="label-small">Sviđanja</span></div>
+          <div class="reaction dislike"><span class="icon">👎</span><span class="count">{{ d.dislikes }}</span><span class="label-small">Nesviđanja</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="description-section" *ngIf="d.facility.description">
+      <h3>O objektu</h3>
+      <p>{{ d.facility.description }}</p>
+    </div>
+
+    <!-- Courts table -->
+    <div class="courts-section">
+      <h3>Dostupni tereni i hale</h3>
+      <div class="table-wrapper" *ngIf="d.courts?.length; else noCourts">
+        <table class="courts-table">
+          <thead><tr><th>Naziv</th><th>Sport</th><th>Tip</th><th>Kapacitet</th><th>Oprema</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let court of d.courts">
+              <td>{{ court.court_name }}</td>
+              <td>{{ court.sport_type }}</td>
+              <td><span class="badge" [class.open]="court.type === 'OPENED'" [class.closed]="court.type === 'CLOSED'">{{ court.type === 'OPENED' ? 'Otvoreni' : 'Zatvoreni' }}</span></td>
+              <td>{{ court.capacity }}</td>
+              <td>{{ court.equipment_description || '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noCourts><p class="empty">Nema registrovanih terena.</p></ng-template>
+    </div>
+
+    <!-- Weekly Calendar -->
+    <div class="calendar-section" *ngIf="d.courts?.length">
+      <h3>Interaktivni kalendar rezervacija</h3>
+
+      <!-- Court selector with rotation -->
+      <div class="court-selector">
+        <button (click)="rotateCourtLeft()" class="rotate-btn" [disabled]="d.courts.length <= 1">◀</button>
+        <div class="court-label">
+          <span class="court-name">{{ currentCourt().court_name }}</span>
+          <span class="court-info">{{ currentCourt().sport_type }} · {{ currentCourt().type === 'OPENED' ? 'Otvoreni' : 'Zatvoreni' }} · {{ currentCourt().capacity }} mesta</span>
+          <span class="court-counter" *ngIf="d.courts.length > 1">{{ currentCourtIndex() + 1 }} / {{ d.courts.length }}</span>
+        </div>
+        <button (click)="rotateCourtRight()" class="rotate-btn" [disabled]="d.courts.length <= 1">▶</button>
+      </div>
+
+      <!-- Week navigation -->
+      <div class="week-nav">
+        <button (click)="prevWeek()" class="week-btn">← Prethodna nedelja</button>
+        <span class="week-label">{{ currentWeekLabel() }}</span>
+        <button (click)="nextWeek()" class="week-btn">Sledeća nedelja →</button>
+      </div>
+
+      <!-- Login warning -->
+      <div class="login-warning" *ngIf="!isAthlete">
+        <p *ngIf="!isLoggedIn">Prijavite se kao sportista da biste rezervisali termin.</p>
+        <p *ngIf="isLoggedIn && !isAthlete">Samo sportisti mogu rezervisati termine.</p>
+      </div>
+
+      <!-- Reservation message -->
+      <div *ngIf="reservationMessage()" class="toast" [class.success]="reservationMessage()!.type === 'success'" [class.error]="reservationMessage()!.type === 'error'">
+        {{ reservationMessage()!.text }}
+      </div>
+
+      <!-- Calendar grid -->
+      <div class="calendar-wrapper" *ngIf="calendarLoading()">Učitavanje kalendara...</div>
+      <div class="calendar-grid" *ngIf="!calendarLoading()">
+        <!-- Header row -->
+        <div class="cal-cell cal-corner">Sat</div>
+        <div *ngFor="let day of weekDays()" class="cal-cell cal-day-header" [class.is-today]="day.isToday">
+          {{ day.label }}
+        </div>
+        <!-- Hour rows -->
+        <ng-container *ngFor="let hour of hours()">
+          <div class="cal-cell cal-hour-label">{{ hourLabel(hour) }}</div>
+          <div *ngFor="let day of weekDays()"
+               class="cal-cell cal-slot"
+               [class.occupied]="isSlotOccupied(day.dateStr, hour)"
+               [class.selected]="isSlotSelected(day.dateStr, hour)"
+               [class.past]="isSlotPast(day.dateStr, hour)"
+               [class.clickable]="isAthlete && !isSlotOccupied(day.dateStr, hour) && !isSlotPast(day.dateStr, hour)"
+               (click)="clickSlot(day.dateStr, hour)">
+            <span *ngIf="isSlotOccupied(day.dateStr, hour)" class="slot-text">Zauzeto</span>
+            <span *ngIf="isSlotSelected(day.dateStr, hour)" class="slot-text">✓ Izabrano</span>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <span class="legend-item"><span class="legend-box free"></span> Slobodno</span>
+        <span class="legend-item"><span class="legend-box occupied"></span> Zauzeto</span>
+        <span class="legend-item"><span class="legend-box selected"></span> Izabrano</span>
+        <span class="legend-item"><span class="legend-box past"></span> Prošlo</span>
+      </div>
+
+      <!-- Reservation form (when slot selected) -->
+      <div class="reservation-form" *ngIf="selectedSlot() as sel">
+        <h4>Rezervacija termina</h4>
+        <div class="res-summary">
+          <p><strong>Teren:</strong> {{ currentCourt().court_name }}</p>
+          <p><strong>Datum:</strong> {{ sel.date | date:'dd.MM.yyyy' }}</p>
+          <p><strong>Vreme:</strong> {{ hourLabel(sel.startHour) }} – {{ hourLabel(sel.startHour + 1) }}</p>
+          <p><strong>Cena:</strong> {{ d.facility.price_per_hour }} RSD</p>
+        </div>
+        <div class="res-actions">
+          <button (click)="reserveSlot()" class="primary-btn">Rezerviši</button>
+          <button (click)="cancelSelection()" class="cancel-btn">Odustani</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ratings -->
+    <div class="ratings-section">
+      <h3>Ocene i komentari</h3>
+      <app-facility-ratings [facilityId]="facilityId"></app-facility-ratings>
+    </div>
+  </div>
+</div>

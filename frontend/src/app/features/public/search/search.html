@@ -4,7 +4,17 @@
 
     <div class="field-row">
       <input formControlName="name" placeholder="Naziv objekta">
-      <input formControlName="city" placeholder="Grad">
+
+      <select formControlName="city">
+        <option value="">Svi gradovi</option>
+        <option *ngFor="let c of cities()" [value]="c">{{ c }}</option>
+      </select>
+
+      <select formControlName="sport">
+        <option value="">Svi sportovi</option>
+        <option *ngFor="let s of sports()" [value]="s">{{ s }}</option>
+      </select>
+
       <select formControlName="type">
         <option value="">Tip terena</option>
         <option value="OPENED">Otvoreni</option>
@@ -15,19 +25,50 @@
     <button type="submit">Pretraži</button>
   </form>
 
-  <p *ngIf="loading()">Učitavanje rezultata...</p>
-
+  <p *ngIf="loading()" class="loading-msg">Učitavanje rezultata...</p>
   <p class="error" *ngIf="error()">{{ error() }}</p>
 
-  <p class="empty" *ngIf="results().length === 0 && !loading()">Nema rezultata. Pokušajte promeniti kriterijume.</p>
-
-  <div class="results-grid">
-    <div class="card" *ngFor="let facility of results()">
-      <h3>{{ facility.name }}</h3>
-      <p><strong>Grad:</strong> {{ facility.city }}</p>
-      <p><strong>Adresa:</strong> {{ facility.address }}</p>
-      <p><strong>Cena/sat:</strong> {{ facility.price_per_hour }}</p>
-      <p><strong>Tip:</strong> {{ facility.type }}</p>
-    </div>
+  <!-- Results table -->
+  <div class="table-wrapper" *ngIf="sortedResults().length > 0 && !loading()">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th (click)="toggleSort('name')" class="sortable">
+            Naziv objekta <span class="sort-icon">{{ sortIcon('name') }}</span>
+          </th>
+          <th (click)="toggleSort('city')" class="sortable">
+            Grad <span class="sort-icon">{{ sortIcon('city') }}</span>
+          </th>
+          <th (click)="toggleSort('sports')" class="sortable">
+            Sport <span class="sort-icon">{{ sortIcon('sports') }}</span>
+          </th>
+          <th (click)="toggleSort('price_per_hour')" class="sortable">
+            Cena/sat <span class="sort-icon">{{ sortIcon('price_per_hour') }}</span>
+          </th>
+          <th>Tip</th>
+          <th class="actions-col">Akcija</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let facility of sortedResults()">
+          <td>{{ facility.name }}</td>
+          <td>{{ facility.city }}</td>
+          <td>{{ facility.sports || '—' }}</td>
+          <td>{{ facility.price_per_hour }} RSD</td>
+          <td>
+            <span class="badge" [class.open]="facility.type === 'OPENED'" [class.closed]="facility.type === 'CLOSED'">
+              {{ facility.type === 'OPENED' ? 'Otvoreni' : (facility.type === 'CLOSED' ? 'Zatvoreni' : facility.type) }}
+            </span>
+          </td>
+          <td class="actions-col">
+            <button (click)="goToDetails(facility.id)" class="details-btn">Detalji</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+
+  <p class="empty" *ngIf="hasSearched() && sortedResults().length === 0 && !loading()">
+    Nema rezultata. Pokušajte promeniti kriterijume.
+  </p>
 </div>

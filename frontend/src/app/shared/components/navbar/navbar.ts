@@ -20,6 +20,7 @@ export class Navbar {
   isLoggedIn = computed(() => this.authService.isLoggedIn());
   isGuest = computed(() => !this.isLoggedIn());
   isAdmin = computed(() => this.user()?.role === 'ADMIN');
+  isEmployee = computed(() => this.user()?.role === 'EMPLOYEE');
   userName = computed(() => this.user()?.username ?? '');
 
   logout() {

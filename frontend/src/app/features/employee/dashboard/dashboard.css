@@ -1,0 +1,30 @@
+.dashboard-container{max-width:1100px;margin:0 auto;padding:2rem}
+.dashboard-container h2{margin:0 0 1.5rem;color:#0f172a;font-size:1.5rem}
+.toast{padding:0.75rem 1rem;border-radius:0.5rem;margin-bottom:1rem;font-size:0.9rem}
+.toast.success{background:rgba(34,197,94,0.1);color:#15803d;border:1px solid rgba(34,197,94,0.3)}
+.toast.error{background:rgba(239,68,68,0.1);color:#b91c1c;border:1px solid rgba(239,68,68,0.3)}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:0.75rem;padding:1.5rem;margin-bottom:1.5rem}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.card-head h3{margin:0}
+.card h3{margin:0 0 1rem;color:#0f172a;font-size:1.1rem}
+.refresh-btn{padding:0.35rem 0.75rem;border:1px solid #2563eb;border-radius:0.35rem;background:#fff;color:#2563eb;cursor:pointer;font-size:0.78rem;font-weight:600}
+.refresh-btn:hover{background:#2563eb;color:#fff}
+.table-wrapper{overflow-x:auto;border-radius:0.5rem;border:1px solid #e2e8f0}
+.data-table{width:100%;border-collapse:collapse;background:#fff;min-width:640px}
+.data-table th{background:#f8fafc;padding:0.7rem 0.85rem;text-align:left;font-size:0.8rem;color:#64748b;font-weight:700;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+.data-table td{padding:0.65rem 0.85rem;font-size:0.88rem;color:#334155;border-bottom:1px solid #f1f5f9}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#f8fafc}
+.type-badge{display:inline-block;padding:0.2rem 0.55rem;border-radius:999px;font-size:0.72rem;font-weight:700}
+.type-badge.reservation{background:rgba(37,99,235,0.12);color:#2563eb}
+.type-badge.training{background:rgba(168,85,247,0.12);color:#a855f7}
+.action-cell{display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap}
+.action-btn{padding:0.3rem 0.7rem;border-radius:0.35rem;cursor:pointer;font-size:0.78rem;font-weight:600;background:#fff}
+.action-btn.green{border:1px solid #22c55e;color:#22c55e}
+.action-btn.green:hover:not(:disabled){background:#22c55e;color:#fff}
+.action-btn.red{border:1px solid #ef4444;color:#ef4444}
+.action-btn.red:hover:not(:disabled){background:#ef4444;color:#fff}
+.action-btn:disabled{opacity:0.5;cursor:not-allowed}
+.hint{font-size:0.7rem;color:#94a3b8;font-style:italic}
+.empty-text{color:#94a3b8;font-style:italic;padding:1rem 0}
+@media(max-width:600px){.dashboard-container{padding:1rem}}

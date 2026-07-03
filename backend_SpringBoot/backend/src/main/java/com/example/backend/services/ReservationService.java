@@ -5,6 +5,7 @@ import com.example.backend.dtos.ReservationResponse;
 import com.example.backend.models.Reservation;
 import com.example.backend.models.User;
 import com.example.backend.repos.CourtRepository;
+import com.example.backend.repos.NoShowRepository;
 import com.example.backend.repos.ReservationRepository;
 import com.example.backend.repos.UserRepository;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final CourtRepository courtRepository;
     private final UserRepository userRepository;
+    private final NoShowRepository noShowRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, CourtRepository courtRepository, UserRepository userRepository) {
+    public ReservationService(ReservationRepository reservationRepository, CourtRepository courtRepository,
+                              UserRepository userRepository, NoShowRepository noShowRepository) {
         this.reservationRepository = reservationRepository;
         this.courtRepository = courtRepository;
         this.userRepository = userRepository;
+        this.noShowRepository = noShowRepository;
     }
 
     public void createReservation(ReservationRequest dto, String username) {
@@ -32,6 +36,12 @@ public class ReservationService {
 
         if (!courtRepository.isCourtInApprovedFacility(dto.getCourt_id())) {
             throw new RuntimeException("Rezervacije mogu se praviti samo za odobrene objekte.");
+        }
+
+        // Proveri da li je korisnik blokiran u ovom objektu zbog nedolazaka
+        Long facilityId = courtRepository.getFacilityIdByCourtId(dto.getCourt_id());
+        if (facilityId != null && noShowRepository.isUserBlocked(user.getId(), facilityId)) {
+            throw new RuntimeException("Vaš nalog je blokiran za rezervacije u ovom objektu zbog previše nedolazaka.");
         }
 
         boolean isOverlapping = reservationRepository.existsOverlapping(
@@ -46,7 +56,7 @@ public class ReservationService {
         res.setReservation_date(dto.getReservation_date());
         res.setStart_time(dto.getStart_time());
         res.setEnd_time(dto.getEnd_time());
-        res.setStatus("PENDING"); // Po tekstu zadatka, zaposleni je naknadno potvrđuje
+        res.setStatus("PENDING");
 
         reservationRepository.save(res);
     }
@@ -70,17 +80,19 @@ public class ReservationService {
             throw new RuntimeException("Nemate pravo da otkažete tuđu rezervaciju.");
         }
 
-        // Provera pravila od 12 sati
-        // Spajamo datum "YYYY-MM-DD" i vreme "HH:MM:SS" u jedan LocalDateTime objekat
-        LocalDateTime reservationStart = LocalDateTime.parse(res.getReservation_date() + "T" + res.getStart_time());
-        LocalDateTime now = LocalDateTime.now();
+        // PENDING rezervacije se mogu otkazati u svakom trenutku (zaposleni ih jos nije potvrdio)
+        // Za CONFIRMED rezervacije vazi pravilo od 12 sati
+        if (!"PENDING".equalsIgnoreCase(res.getStatus())) {
+            LocalDateTime reservationStart = LocalDateTime.parse(res.getReservation_date() + "T" + res.getStart_time());
+            LocalDateTime now = LocalDateTime.now();
 
-        Duration duration = Duration.between(now, reservationStart);
+            Duration duration = Duration.between(now, reservationStart);
 
-        // Ako je vreme do termina manje od 12 sati, bacamo grešku
-        if (duration.toHours() < 12) {
-            throw new RuntimeException(
-                    "Otkazivanje nije dozvoljeno jer je do početka termina ostalo manje od 12 sati.");
+            // Ako je vreme do termina manje od 12 sati, bacamo grešku
+            if (duration.toHours() < 12) {
+                throw new RuntimeException(
+                        "Otkazivanje nije dozvoljeno jer je do početka termina ostalo manje od 12 sati.");
+            }
         }
 
         // Ako je sve u redu, menjamo status u CANCELLED

@@ -1,0 +1,134 @@
+<div class="shop-container">
+  <!-- Toast message -->
+  <div
+    *ngIf="message()"
+    class="toast"
+    [class.success]="message()!.type === 'success'"
+    [class.error]="message()!.type === 'error'"
+  >
+    {{ message()!.text }}
+  </div>
+
+  <!-- Header with cart toggle -->
+  <div class="shop-header">
+    <h2>Prodavnica opreme</h2>
+    <button class="cart-btn" (click)="toggleCart()">
+      🛒 Korpa ({{ cart.totalCount() }})
+    </button>
+  </div>
+
+  <!-- Sport filter pills -->
+  <div class="sports-filter">
+    <button
+      *ngFor="let sport of sports()"
+      type="button"
+      (click)="selectSport(sport)"
+      class="sport-pill"
+      [class.active]="selectedSport() === sport"
+    >
+      {{ sport }}
+    </button>
+  </div>
+
+  <!-- ===== Catalog view ===== -->
+  <div *ngIf="!showCart()">
+    <p *ngIf="loading()" class="loading">Učitavanje kataloga...</p>
+
+    <div *ngIf="!loading() && catalog().length === 0" class="empty-cart">
+      Nema dostupne opreme za izabrani sport.
+    </div>
+
+    <div *ngIf="!loading()" class="product-grid">
+      <div *ngFor="let eq of catalog()" class="product-card">
+        <div class="product-image-wrap">
+          <img
+            *ngIf="getImageUrl(eq) as url; else placeholder"
+            [src]="url"
+            [alt]="eq.name"
+            class="product-img"
+          />
+          <ng-template #placeholder>
+            <div class="img-placeholder">{{ eq.name }}</div>
+          </ng-template>
+        </div>
+        <h3 class="product-name">{{ eq.name }}</h3>
+        <p class="product-price">{{ eq.price | number: '1.2-2' }} RSD</p>
+        <p class="product-stock">
+          <span *ngIf="eq.stock_quantity > 0">Na stanju: {{ eq.stock_quantity }}</span>
+          <span *ngIf="eq.stock_quantity === 0" class="out-of-stock">Nema na stanju</span>
+        </p>
+        <button
+          type="button"
+          class="add-btn"
+          [disabled]="eq.stock_quantity === 0"
+          (click)="addToCart(eq)"
+        >
+          Dodaj u korpu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Cart view ===== -->
+  <div *ngIf="showCart()">
+    <button type="button" class="back-btn" (click)="toggleCart()">
+      ← Nazad na katalog
+    </button>
+
+    <div *ngIf="cart.items().length === 0" class="empty-cart">
+      Korpa je prazna.
+    </div>
+
+    <div *ngIf="cart.items().length > 0" class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Proizvod</th>
+            <th>Cena</th>
+            <th>Količina</th>
+            <th>Ukupno</th>
+            <th>Ukloni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cart.items()">
+            <td>{{ item.equipment.name }}</td>
+            <td>{{ item.equipment.price | number: '1.2-2' }} RSD</td>
+            <td>
+              <div class="qty-control">
+                <button
+                  type="button"
+                  (click)="updateQty(item.equipment.id, item.quantity - 1)"
+                >−</button>
+                <span>{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  (click)="updateQty(item.equipment.id, item.quantity + 1)"
+                >+</button>
+              </div>
+            </td>
+            <td>{{ (item.equipment.price * item.quantity) | number: '1.2-2' }} RSD</td>
+            <td>
+              <button
+                type="button"
+                class="remove-btn"
+                (click)="removeItem(item.equipment.id)"
+              >
+                Ukloni
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="cart.items().length > 0" class="cart-summary">
+      <div class="total">
+        Ukupno: <strong>{{ cart.totalPrice() | number: '1.2-2' }} RSD</strong>
+      </div>
+      <button type="button" class="checkout-btn" (click)="checkout()">
+        Naruči
+      </button>
+    </div>
+  </div>
+</div>

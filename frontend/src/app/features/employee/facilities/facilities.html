@@ -1,0 +1,129 @@
+<div class="fac-container">
+  <h2>Upravljanje objektima</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast"
+       [class.success]="message()!.type === 'success'"
+       [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <!-- Card 1: My facilities -->
+  <div class="card">
+    <h3>Moji objekti</h3>
+
+    <p *ngIf="loading()" class="empty-text">Učitavanje...</p>
+
+    <ng-container *ngIf="!loading()">
+      <div class="table-wrapper"
+           *ngIf="profile() && profile()!.myFacilities && profile()!.myFacilities.length > 0; else noFacilities">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Naziv</th>
+              <th>Grad</th>
+              <th>Adresa</th>
+              <th>Tip</th>
+              <th>Cena/sat</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of profile()!.myFacilities">
+              <td>{{ f.name }}</td>
+              <td>{{ f.city }}</td>
+              <td>{{ f.address }}</td>
+              <td>{{ f.type }}</td>
+              <td>{{ f.pricePerHour }} RSD</td>
+              <td>
+                <span class="status-badge"
+                      [class.pending]="f.status === 'PENDING'"
+                      [class.approved]="f.status === 'APPROVED'"
+                      [class.rejected]="f.status === 'REJECTED'">
+                  {{ f.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noFacilities>
+        <p class="empty-text">Nemate dodeljene objekte.</p>
+      </ng-template>
+    </ng-container>
+  </div>
+
+  <!-- Card 2: Add facility from JSON -->
+  <div class="card">
+    <h3>Dodaj objekat iz JSON fajla</h3>
+    <div class="upload-row">
+      <input id="jsonFileInput" type="file" accept=".json"
+             (change)="onJsonFileSelected($event)" class="file-input">
+      <button type="button" class="primary-btn" (click)="uploadJson()"
+              [disabled]="!selectedJsonFile">Dodaj objekat</button>
+    </div>
+    <p class="hint">
+      JSON fajl mora sadržati <code>FacilityRequest</code> objekat sa poljima:
+      name, city, address, description, price_per_hour, type, work_start_time,
+      work_end_time, company_name, company_address, company_id_number, pib i
+      listu <code>courts</code> (court_name, sport_type, type [OPENED|CLOSED],
+      capacity, equipment_description).
+    </p>
+  </div>
+
+  <!-- Card 3: Add court -->
+  <div class="card">
+    <h3>Dodaj teren</h3>
+
+    <div class="field facility-select-field" *ngIf="profile() && profile()!.myFacilities && profile()!.myFacilities.length > 0; else noFacilitiesForCourt">
+      <label>Objekat</label>
+      <select (change)="onFacilityChange($event)">
+        <option *ngFor="let f of profile()!.myFacilities"
+                [value]="f.id"
+                [selected]="f.id === selectedFacilityId()">
+          {{ f.name }} — {{ f.city }}
+        </option>
+      </select>
+    </div>
+    <ng-template #noFacilitiesForCourt>
+      <p class="empty-text">Nemate objekte kojima možete dodati teren.</p>
+    </ng-template>
+
+    <form [formGroup]="courtForm" (ngSubmit)="addCourt()" class="court-form"
+          *ngIf="profile() && profile()!.myFacilities && profile()!.myFacilities.length > 0">
+      <div class="form-grid">
+        <div class="field">
+          <label>Naziv terena</label>
+          <input type="text" formControlName="court_name" placeholder="npr. Teren 1">
+        </div>
+        <div class="field">
+          <label>Sport</label>
+          <select formControlName="sport_type">
+            <option value="" disabled>Izaberite sport</option>
+            <option *ngFor="let s of sports()" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tip</label>
+          <select formControlName="type">
+            <option value="OPENED">OPENED</option>
+            <option value="CLOSED">CLOSED</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Kapacitet</label>
+          <input type="number" formControlName="capacity" min="1">
+        </div>
+      </div>
+      <div class="field">
+        <label>Oprema (opis)</label>
+        <textarea formControlName="equipment_description" rows="3"
+                  maxlength="300" placeholder="Kratak opis opreme na terenu..."></textarea>
+        <div class="char-counter">{{ equipmentLength }}/300</div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="primary-btn" [disabled]="courtForm.invalid">Dodaj teren</button>
+      </div>
+    </form>
+  </div>
+</div>

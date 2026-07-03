@@ -11,8 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class HomepageResponse {
 
-    //vracamo broj aktivnih objekata
-    // i tri TOP objekta? nemamo implementiran sistem ocenjivanja i lajkova  tkd uzimamo neka 3 objekta koja su aktivna?
     private long totalFacilities;
     private List<Map<String, Object>> topFacilities; // Lista od top 3 objekta
+    private List<PromotionSummaryResponse> promotions; // Top 3 aktuelne promocije
 }

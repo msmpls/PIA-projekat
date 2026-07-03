@@ -6,9 +6,9 @@ import { Facility } from '../../../core/models/facility.model';
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/public/facilities';
+  private apiUrl = 'http://localhost:8080/api/public';
 
-  search(name?: string, city?: string, type?: string): Observable<Facility[]> {
+  search(name?: string, city?: string, type?: string, sport?: string): Observable<Facility[]> {
     let params = new HttpParams();
     if (name) {
       params = params.set('name', name);
@@ -19,6 +19,17 @@ export class SearchService {
     if (type) {
       params = params.set('type', type);
     }
-    return this.http.get<Facility[]>(this.apiUrl, { params });
+    if (sport) {
+      params = params.set('sport', sport);
+    }
+    return this.http.get<Facility[]>(`${this.apiUrl}/facilities`, { params });
+  }
+
+  getCities(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/cities`);
+  }
+
+  getSports(): Observable<string[]> {
+    return this.http.get<string[]>('http://localhost:8080/api/sports/names');
   }
 }

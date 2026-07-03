@@ -1,0 +1,57 @@
+<div class="orders-container">
+  <h2>Obrada narudžbina</h2>
+
+  <div *ngIf="message()" class="toast" [class.success]="message()!.type === 'success'" [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <p *ngIf="loading()" class="loading">Učitavanje narudžbina...</p>
+
+  <div class="card" *ngIf="!loading()">
+    <div class="table-wrapper" *ngIf="orders().length > 0; else noOrders">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Br.</th>
+            <th>Datum</th>
+            <th>Stavke</th>
+            <th>Ukupno</th>
+            <th>Status</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of orders()">
+            <td>#{{ o.id }}</td>
+            <td>{{ o.order_date | date:'dd.MM.yyyy HH:mm' }}</td>
+            <td class="items-cell">{{ o.items_summary }}</td>
+            <td>{{ o.total_price | number:'1.0-0' }} RSD</td>
+            <td>
+              <span class="status-badge"
+                    [class.ordered]="o.status === 'ORDERED'"
+                    [class.accepted]="o.status === 'ACCEPTED'"
+                    [class.delivered]="o.status === 'DELIVERED'"
+                    [class.cancelled]="o.status === 'CANCELLED'">
+                {{ statusLabel(o.status) }}
+              </span>
+            </td>
+            <td class="actions-col">
+              <ng-container [ngSwitch]="o.status">
+                <ng-container *ngSwitchCase="'ORDERED'">
+                  <button (click)="acceptOrder(o.id)" class="btn-accept">Prihvati</button>
+                  <button (click)="cancelOrder(o.id)" class="btn-cancel">Otkaži</button>
+                </ng-container>
+                <ng-container *ngSwitchCase="'ACCEPTED'">
+                  <button (click)="deliverOrder(o.id)" class="btn-deliver">Preuzeto</button>
+                  <button (click)="cancelOrder(o.id)" class="btn-cancel">Otkaži</button>
+                </ng-container>
+                <span *ngSwitchDefault class="text-muted">—</span>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noOrders><p class="empty-text">Nema narudžbina.</p></ng-template>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+<div class="calendar-container">
+  <h2>Interaktivni kalendar (drag-and-drop)</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast"
+       [class.success]="message()!.type === 'success'"
+       [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <!-- Controls -->
+  <div class="controls" *ngIf="facilities().length > 0">
+    <div class="field">
+      <label for="facility">Objekat</label>
+      <select id="facility"
+              [value]="selectedFacilityId()"
+              (change)="selectedFacilityId.set(+$any($event.target).value); onFacilityChange()">
+        <option *ngFor="let f of facilities()" [value]="f.id">{{ f.name }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="court">Teren / Hale</label>
+      <select id="court"
+              [value]="selectedCourtId()"
+              [disabled]="courts().length === 0"
+              (change)="selectedCourtId.set(+$any($event.target).value); onCourtChange()">
+        <option *ngFor="let c of courts()" [value]="c.id">
+          {{ c.court_name }} · {{ c.type === 'OPENED' ? 'Otvoreni' : 'Zatvoreni' }}
+        </option>
+      </select>
+    </div>
+
+    <div class="week-nav">
+      <button (click)="prevWeek()" class="week-btn">← Prethodna</button>
+      <span class="week-label">{{ currentWeekLabel() }}</span>
+      <button (click)="nextWeek()" class="week-btn">Sledeća →</button>
+    </div>
+  </div>
+
+  <!-- No facilities assigned -->
+  <div *ngIf="profile() && facilities().length === 0" class="info-message">
+    Nemate dodeljenih objekata.
+  </div>
+
+  <!-- Info for OPENED courts -->
+  <div *ngIf="currentCourt() && !isCourtClosed()" class="info-message">
+    Drag-and-drop je dostupan samo za zatvorene hale i dvorane.
+  </div>
+
+  <!-- Loading -->
+  <p *ngIf="loading()" class="loading">Učitavanje kalendara...</p>
+
+  <!-- Calendar grid -->
+  <div class="calendar-grid" *ngIf="!loading() && selectedCourtId() !== null">
+    <!-- Header row -->
+    <div class="cal-cell cal-corner">Sat</div>
+    <div *ngFor="let day of weekDays()" class="cal-cell cal-day-header" [class.is-today]="day.isToday">
+      {{ day.label }}
+    </div>
+
+    <!-- Hour rows -->
+    <ng-container *ngFor="let hour of hours()">
+      <div class="cal-cell cal-hour-label">{{ hourLabel(hour) }}</div>
+
+      <ng-container *ngFor="let day of weekDays()">
+        <!-- Cell with items (RESERVATION or TRAINING) -->
+        <div *ngIf="getItemsForSlot(day.dateStr, hour).length > 0; else emptyCell"
+             class="cal-cell cal-slot has-items">
+          <div *ngFor="let item of getItemsForSlot(day.dateStr, hour)"
+               class="card-item"
+               [class.reservation-card]="item.type === 'RESERVATION'"
+               [class.training-card]="item.type === 'TRAINING'"
+               [class.dragging]="draggedReservationId() === item.id"
+               [draggable]="isDraggable(item)"
+               (dragstart)="onDragStart($event, item)"
+               (dragend)="onDragEnd()">
+            <div class="card-title">{{ item.userName }}</div>
+            <div class="card-time">{{ formatTime(item.startTime) }}–{{ formatTime(item.endTime) }}</div>
+            <span class="card-badge" [class.training]="item.type === 'TRAINING'">
+              {{ item.type === 'RESERVATION' ? 'Rezervacija' : 'Trening' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Empty cell = drop zone -->
+        <ng-template #emptyCell>
+          <div class="cal-cell cal-slot drop-zone"
+               [class.droppable]="isCourtClosed()"
+               [class.drag-over]="isDragOver(day.dateStr, hour) && isCourtClosed()"
+               (dragover)="onDragOver($event, day.dateStr, hour)"
+               (dragleave)="onDragLeave(day.dateStr, hour)"
+               (drop)="onDrop($event, day.dateStr, hour)">
+          </div>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" *ngIf="!loading() && selectedCourtId() !== null">
+    <span class="legend-item">
+      <span class="legend-box reservation"></span> Rezervacija (prevuci)
+    </span>
+    <span class="legend-item">
+      <span class="legend-box training"></span> Trening (ne može se prevlačiti)
+    </span>
+    <span class="legend-item hint">Prevuci karticu na slobodan termin da pomeris rezervaciju</span>
+  </div>
+</div>

@@ -1,0 +1,141 @@
+<div class="ta-container">
+  <h2>Pronalazak saigrača</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast" [class.success]="message()!.type === 'success'" [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button (click)="setTab('browse')" [class.active]="activeTab() === 'browse'">Aktivni oglasi</button>
+    <button (click)="setTab('create')" [class.active]="activeTab() === 'create'">Kreiraj oglas</button>
+    <button (click)="setTab('my')" [class.active]="activeTab() === 'my'">Moji oglasi</button>
+  </div>
+
+  <!-- Browse tab -->
+  <div *ngIf="activeTab() === 'browse'" class="tab-content">
+    <div class="card">
+      <h3>Aktivni oglasi</h3>
+      <div class="table-wrapper" *ngIf="activeAds().length > 0; else noAds">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Sport</th>
+              <th>Grad</th>
+              <th>Datum</th>
+              <th>Vreme</th>
+              <th>Potrebno igrača</th>
+              <th>Autor</th>
+              <th>Akcija</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ad of activeAds()">
+              <td>{{ ad.sport }}</td>
+              <td>{{ ad.city }}</td>
+              <td>{{ ad.event_date | date:'dd.MM.yyyy' }}</td>
+              <td>{{ ad.event_time }}</td>
+              <td>{{ ad.players_needed }}</td>
+              <td>@{{ ad.creator_username }}</td>
+              <td>
+                <button *ngIf="!hasResponded(ad.id)" (click)="respondToAd(ad.id)" class="primary-btn-sm">Prijavi se</button>
+                <span *ngIf="hasResponded(ad.id)" class="status-badge"
+                      [class.pending]="getResponseStatus(ad.id) === 'PENDING'"
+                      [class.approved]="getResponseStatus(ad.id) === 'APPROVED'"
+                      [class.rejected]="getResponseStatus(ad.id) === 'REJECTED'">
+                  {{ getResponseStatus(ad.id) === 'PENDING' ? 'Na čekanju' : (getResponseStatus(ad.id) === 'APPROVED' ? 'Prihvaćen' : 'Odbijen') }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noAds><p class="empty-text">Trenutno nema aktivnih oglasa.</p></ng-template>
+    </div>
+  </div>
+
+  <!-- Create tab -->
+  <div *ngIf="activeTab() === 'create'" class="tab-content">
+    <div class="card">
+      <h3>Novi oglas</h3>
+      <form [formGroup]="createForm" (ngSubmit)="createAd()" class="create-form">
+        <div class="form-grid">
+          <div class="field">
+            <label>Sport</label>
+            <select formControlName="sport">
+              <option value="" disabled>Izaberite sport</option>
+              <option *ngFor="let s of sports()" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Grad</label>
+            <select formControlName="city">
+              <option value="" disabled>Izaberite grad</option>
+              <option *ngFor="let c of cities()" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Datum</label>
+            <input type="date" formControlName="event_date" [min]="today">
+          </div>
+          <div class="field">
+            <label>Vreme</label>
+            <input type="time" formControlName="event_time">
+          </div>
+          <div class="field">
+            <label>Broj igrača</label>
+            <input type="number" formControlName="players_needed" min="1">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn" [disabled]="createForm.invalid">Postavi oglas</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- My ads tab -->
+  <div *ngIf="activeTab() === 'my'" class="tab-content">
+    <div *ngIf="myAds().length > 0; else noMyAds">
+      <div class="card" *ngFor="let ad of myAds()">
+        <div class="my-ad-header">
+          <div class="my-ad-info">
+            <h3>{{ ad.sport }} · {{ ad.city }}</h3>
+            <p class="my-ad-meta">
+              {{ ad.event_date | date:'dd.MM.yyyy' }} u {{ ad.event_time }}
+              · Potrebno igrača: {{ ad.players_needed }}
+            </p>
+          </div>
+          <div class="my-ad-actions">
+            <span class="status-badge" [class.open]="ad.status === 'OPEN'" [class.closed]="ad.status === 'CLOSED'">
+              {{ ad.status }}
+            </span>
+            <button *ngIf="ad.status === 'OPEN'" (click)="closeAd(ad.id)" class="cancel-btn-sm">Zatvori oglas</button>
+          </div>
+        </div>
+
+        <div *ngIf="ad.responses && ad.responses.length > 0" class="responses">
+          <h4>Prijave ({{ ad.responses.length }})</h4>
+          <div class="response-row" *ngFor="let r of ad.responses">
+            <div class="response-info">
+              <span class="response-name">@{{ r.username }} · {{ r.first_name }} {{ r.last_name }}</span>
+              <span class="response-phone">{{ r.phone }}</span>
+            </div>
+            <div class="response-actions">
+              <span class="status-badge" [class.pending]="r.status === 'PENDING'" [class.approved]="r.status === 'APPROVED'" [class.rejected]="r.status === 'REJECTED'">
+                {{ r.status }}
+              </span>
+              <ng-container *ngIf="r.status === 'PENDING'">
+                <button (click)="approveResponse(r.response_id)" class="primary-btn-sm">Odobri</button>
+                <button (click)="rejectResponse(r.response_id)" class="cancel-btn-sm">Odbij</button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="!ad.responses || ad.responses.length === 0" class="empty-text">Nema prijava za ovaj oglas.</p>
+      </div>
+    </div>
+    <ng-template #noMyAds><p class="empty-text">Nemate postavljenih oglasa.</p></ng-template>
+  </div>
+</div>

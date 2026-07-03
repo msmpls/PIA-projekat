@@ -1,5 +1,14 @@
 <nav class="navbar">
-  <a routerLink="/home" class="logo">SportSphere Hub</a>
+  <!-- Left: user chip (only when logged in) + logo -->
+  <div class="nav-left">
+    <ng-container *ngIf="!isGuest()">
+      <a routerLink="/profile" class="user-chip">
+        <span class="user-slash">//</span>
+        <span class="user-name">{{ userName() }}</span>
+      </a>
+    </ng-container>
+    <a routerLink="/home" class="logo">SportSphere Hub</a>
+  </div>
 
   <ul class="nav-links">
     <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
@@ -18,13 +27,25 @@
       </ng-container>
 
       <ng-template #regularUser>
-        <li><a routerLink="/search" routerLinkActive="active">Search</a></li>
-        <li><a routerLink="/profile" routerLinkActive="active">Profile</a></li>
-        <li><a routerLink="/my-reservations" routerLinkActive="active">Reservations</a></li>
-        <li class="nav-greeting">Hello, {{ userName() }}</li>
+        <ng-container *ngIf="isEmployee(); else athleteLinks">
+          <li><a routerLink="/employee/dashboard" routerLinkActive="active">Dashboard</a></li>
+          <li><a routerLink="/employee/facilities" routerLinkActive="active">Objekti</a></li>
+          <li><a routerLink="/employee/orders" routerLinkActive="active">Narudžbine</a></li>
+          <li><a routerLink="/employee/equipment-promotions" routerLinkActive="active">Oprema/Promocije</a></li>
+          <li><a routerLink="/employee/calendar" routerLinkActive="active">Kalendar</a></li>
+          <li><a routerLink="/employee/reports" routerLinkActive="active">Izveštaji</a></li>
+        </ng-container>
+
+        <ng-template #athleteLinks>
+          <li><a routerLink="/shop" routerLinkActive="active">Shop</a></li>
+          <li><a routerLink="/teammate-ads" routerLinkActive="active">Saigrači</a></li>
+          <li><a routerLink="/trainings" routerLinkActive="active">Treninzi</a></li>
+          <li><a routerLink="/statistics" routerLinkActive="active">Statistika</a></li>
+          <li><a routerLink="/profile" routerLinkActive="active">Profil</a></li>
+        </ng-template>
       </ng-template>
 
-      <li><button type="button" (click)="logout()">Logout</button></li>
+      <li><button type="button" class="logout-btn" (click)="logout()">Logout</button></li>
     </ng-template>
   </ul>
 </nav>

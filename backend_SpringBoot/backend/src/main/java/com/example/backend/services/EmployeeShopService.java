@@ -40,6 +40,11 @@ public class EmployeeShopService {
     }
 
     @Transactional
+    public void acceptOrder(Long orderId) {
+        staffOrderRepository.updateStatusDirectly(orderId, "ACCEPTED");
+    }
+
+    @Transactional
     public void markOrderAsDelivered(Long orderId) {
         staffOrderRepository.updateStatusDirectly(orderId, "DELIVERED");
     }
