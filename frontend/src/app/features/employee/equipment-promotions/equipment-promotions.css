@@ -25,7 +25,7 @@
 .data-table td{padding:0.65rem 0.85rem;font-size:0.88rem;color:#334155;border-bottom:1px solid #f1f5f9}
 .data-table tr:last-child td{border-bottom:none}
 .data-table tr:hover td{background:#f8fafc}
-.thumb{width:40px;height:40px;object-fit:cover;border-radius:0.35rem;border:1px solid #e2e8f0}
+.thumb{width:40px;height:40px;object-fit:contain;border-radius:0.35rem;border:1px solid #e2e8f0;background:#f8fafc}
 .thumb-placeholder{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;color:#94a3b8;font-size:0.62rem;border-radius:0.35rem;text-align:center}
 .action-cell{display:flex;gap:0.35rem;flex-wrap:wrap}
 .edit-btn-sm{padding:0.3rem 0.6rem;border:1px solid #2563eb;border-radius:0.35rem;background:#fff;color:#2563eb;cursor:pointer;font-size:0.76rem;font-weight:600}
