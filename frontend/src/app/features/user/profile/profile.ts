@@ -92,9 +92,12 @@ export class Profile implements OnInit {
         this.showMessage('error', 'Greška pri učitavanju profila.');
       },
     });
-    this.loadReservations();
-    this.loadTrainings();
-    this.loadOrders();
+    // Athlete-only data: only load for athletes
+    if (this.isAthlete) {
+      this.loadReservations();
+      this.loadTrainings();
+      this.loadOrders();
+    }
   }
 
   loadReservations(): void {

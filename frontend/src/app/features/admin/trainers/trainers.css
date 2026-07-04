@@ -1,0 +1,24 @@
+.trainers-container{max-width:1100px;margin:0 auto;padding:2rem}
+.trainers-container h2{margin:0 0 1.5rem;color:#0f172a;font-size:1.5rem}
+.toast{padding:0.75rem 1rem;border-radius:0.5rem;margin-bottom:1rem;font-size:0.9rem;font-weight:600}
+.toast.success{background:rgba(34,197,94,0.1);color:#15803d;border:1px solid rgba(34,197,94,0.3)}
+.toast.error{background:rgba(239,68,68,0.1);color:#b91c1c;border:1px solid rgba(239,68,68,0.3)}
+.loading-state{padding:1rem;border-radius:0.75rem;background:#f8fafc;color:#334155;text-align:center;margin-bottom:1rem;font-size:0.9rem}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:0.75rem;padding:1.5rem}
+.table-wrapper{overflow-x:auto;border-radius:0.5rem}
+.trainers-table{width:100%;border-collapse:collapse;min-width:720px}
+.trainers-table th{background:#f8fafc;padding:0.7rem 0.85rem;text-align:left;font-size:0.8rem;color:#64748b;font-weight:700;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+.trainers-table td{padding:0.65rem 0.85rem;font-size:0.88rem;color:#334155;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.trainers-table tr:last-child td{border-bottom:none}
+.trainers-table tbody tr:hover td{background:#f8fafc}
+.cell-name{font-weight:600;color:#0f172a}
+.status-badge{display:inline-block;padding:0.2rem 0.6rem;border-radius:999px;font-size:0.72rem;font-weight:700}
+.status-badge.active{background:rgba(34,197,94,0.12);color:#15803d}
+.status-badge.inactive{background:rgba(239,68,68,0.12);color:#b91c1c}
+.action-btn{padding:0.35rem 0.75rem;border-radius:0.35rem;cursor:pointer;font-size:0.78rem;font-weight:600;background:#fff;transition:background .15s ease,color .15s ease}
+.action-btn.deactivate{border:1px solid #ef4444;color:#ef4444}
+.action-btn.deactivate:hover{background:#ef4444;color:#fff}
+.action-btn.activate{border:1px solid #22c55e;color:#15803d}
+.action-btn.activate:hover{background:#22c55e;color:#fff}
+.empty-state{margin:1rem 0 0;color:#94a3b8;font-style:italic;text-align:center;font-size:0.9rem}
+@media(max-width:600px){.trainers-container{padding:1rem}.card{padding:1rem}}

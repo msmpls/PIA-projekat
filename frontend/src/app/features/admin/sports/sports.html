@@ -1,0 +1,50 @@
+<div class="sports-container">
+  <h2>Vrste sportova</h2>
+
+  <!-- Toast -->
+  <div *ngIf="message()" class="toast"
+       [class.success]="message()!.type === 'success'"
+       [class.error]="message()!.type === 'error'">
+    {{ message()!.text }}
+  </div>
+
+  <div class="grid">
+    <!-- Card 1: Add new sport -->
+    <div class="card">
+      <h3>Dodaj novi sport</h3>
+      <form [formGroup]="addForm" (ngSubmit)="addSport()">
+        <div class="field">
+          <label for="name">Naziv sporta</label>
+          <input id="name" type="text" formControlName="name" placeholder="npr. Tenis">
+          <p *ngIf="addForm.get('name')!.touched && addForm.get('name')!.invalid" class="error-text">
+            Naziv sporta je obavezan.
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="description">Opis</label>
+          <textarea id="description" formControlName="description" rows="4"
+                    placeholder="Kratak opis sporta..."></textarea>
+          <p *ngIf="addForm.get('description')!.touched && addForm.get('description')!.invalid" class="error-text">
+            Opis je obavezan.
+          </p>
+        </div>
+
+        <button type="submit" class="primary-btn" [disabled]="addForm.invalid">Dodaj sport</button>
+      </form>
+    </div>
+
+    <!-- Card 2: Existing sports -->
+    <div class="card">
+      <h3>Postojeći sportovi</h3>
+
+      <p *ngIf="loading()" class="loading-text">Učitavanje sportova...</p>
+
+      <div *ngIf="!loading() && sports().length > 0" class="sport-tags">
+        <span *ngFor="let s of sports()" class="sport-tag">{{ s }}</span>
+      </div>
+
+      <p *ngIf="!loading() && sports().length === 0" class="empty-text">Nema registrovanih sportova.</p>
+    </div>
+  </div>
+</div>

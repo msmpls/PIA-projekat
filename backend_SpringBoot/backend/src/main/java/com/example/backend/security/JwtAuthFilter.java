@@ -53,25 +53,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // 3. Ako imamo korisničko ime, a korisnik još uvek nije autentifikovan u ovoj niti (requestu)
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            // Proveravamo validnost tokena
-            if (jwtUtil.validateToken(jwt, username)) {
-                
-                // Izvlačimo ulogu koju smo spakovali u token (npr. "ROLE_ATHLETE", "ROLE_ADMIN")
-                String role = jwtUtil.extractClaim(jwt, claims -> claims.get("role", String.class));
-                
-                // Spring Security zahteva da uloge počinju sa prefiksom "ROLE_" da bi hasRole() radilo ispravno
-                String springRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-                List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(springRole));
+            try {
+                // Proveravamo validnost tokena
+                if (jwtUtil.validateToken(jwt, username)) {
+                    
+                    // Izvlačimo ulogu koju smo spakovali u token (npr. "ROLE_ATHLETE", "ROLE_ADMIN")
+                    String role = jwtUtil.extractClaim(jwt, claims -> claims.get("role", String.class));
+                    
+                    // Spring Security zahteva da uloge počinju sa prefiksom "ROLE_" da bi hasRole() radilo ispravno
+                    String springRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                    List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(springRole));
 
-                // Kreiramo objekat autentifikacije za Spring
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        username, null, authorities
-                );
-                
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                // Ubacujemo korisnika u bezbednosni kontekst - od ovog momenta on je "prijavljen" za ovaj zahtev
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // Kreiramo objekat autentifikacije za Spring
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            username, null, authorities
+                    );
+                    
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    
+                    // Ubacujemo korisnika u bezbednosni kontekst - od ovog momenta on je "prijavljen" za ovaj zahtev
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (Exception e) {
+                // Ako token nije validan (istekao, neispravan, itd.), samo logujemo i nastavljamo
+                // Za permitAll rute ce proci, za ostale ce Spring Security vratiti 401/403
+                logger.error("Greška pri validaciji JWT tokena: " + e.getMessage());
             }
         }
 

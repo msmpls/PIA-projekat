@@ -3,12 +3,12 @@ import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, Validat
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -23,6 +23,17 @@ export class Register implements OnInit {
   errorMessage = signal<string>('');
   sports = signal<string[]>([]);
   sportsLoading = signal<boolean>(false);
+
+  // DiceBear avatar
+  avatarPreview = signal<string>('');
+  avatarSeed = signal<string>('');
+  avatarStyle = signal<string>('identicon');
+
+  avatarStyles = [
+    { value: 'identicon', label: 'Geometrija' },
+    { value: 'bottts', label: 'Roboti' },
+    { value: 'initials', label: 'Inicijali' },
+  ];
 
   registerForm = this.fb.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
@@ -87,7 +98,54 @@ export class Register implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
+      this.avatarPreview.set('');
     }
+  }
+
+  // ===== DiceBear avatar generation =====
+  generateAvatar() {
+    // Random seed based on username or random string
+    const username = this.registerForm.get('username')?.value || '';
+    const seed = username ? username + '_' + Date.now() : 'user_' + Math.random().toString(36).substring(7);
+    this.avatarSeed.set(seed);
+    this.updateAvatarPreview();
+  }
+
+  onAvatarStyleChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.avatarStyle.set(select.value);
+    if (this.avatarSeed()) {
+      this.updateAvatarPreview();
+    }
+  }
+
+  private updateAvatarPreview() {
+    const seed = this.avatarSeed();
+    const style = this.avatarStyle();
+    // DiceBear HTTP API - returns PNG image
+    this.avatarPreview.set(`https://api.dicebear.com/7.x/${style}/png?seed=${encodeURIComponent(seed)}&size=200`);
+    // Clear any manually selected file
+    this.selectedFile = null;
+  }
+
+  regenerateAvatar() {
+    this.avatarSeed.set(this.avatarSeed() + '_v' + Math.floor(Math.random() * 1000));
+    this.updateAvatarPreview();
+  }
+
+  saveAvatarAsProfilePic() {
+    if (!this.avatarPreview()) return;
+    // Fetch the PNG image and convert to File
+    fetch(this.avatarPreview())
+      .then(response => response.blob())
+      .then(blob => {
+        const file = new File([blob], `avatar_${this.avatarSeed()}.png`, { type: 'image/png' });
+        this.selectedFile = file;
+        this.errorMessage.set('');
+      })
+      .catch(() => {
+        this.errorMessage.set('Greška pri preuzimanju avatara. Pokušajte ponovo.');
+      });
   }
 
   onSubmit() {

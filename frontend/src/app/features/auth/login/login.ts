@@ -27,11 +27,13 @@ export class Login {
     if (this.form.valid) {
       this.authService.login(this.form.getRawValue()).subscribe({
         next: (response) => {
+          // Administrator se ne prijavljuje preko ove forme - ima posebnu skrivenu rutu
           if (response.role === 'ADMIN') {
-            this.router.navigate(['/admin/facility-requests']);
-          } else {
-            this.router.navigate(['/profile']);
+            this.authService.logout();
+            this.errorMessage.set('Administrator se prijavljuje preko posebne forme.');
+            return;
           }
+          this.router.navigate(['/profile']);
         },
         error: (err) => {
           this.errorMessage.set(err?.error?.message || 'Pogrešno korisničko ime ili lozinka.');

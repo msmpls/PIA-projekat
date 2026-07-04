@@ -1,30 +1,36 @@
-<div class="reg-requests">
-	<h2>Zahtevi za registraciju</h2>
+<div class="reg-container">
+  <h2>Zahtevi za registraciju</h2>
 
-	<div *ngIf="loading">Učitavanje...</div>
-	<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  <div *ngIf="loading" class="loading">Učitavanje...</div>
+  <div *ngIf="errorMessage" class="toast error">{{ errorMessage }}</div>
 
-	<table *ngIf="!loading && pendingUsers().length > 0" class="requests-table">
-		<thead>
-			<tr>
-				<th>Korisnik</th>
-				<th>Ime</th>
-				<th>E-mail</th>
-				<th>Akcije</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr *ngFor="let u of pendingUsers()">
-				<td>{{ u.username }}</td>
-				<td>{{ u.first_name }} {{ u.last_name }}</td>
-				<td>{{ u.email }}</td>
-				<td class="actions">
-					<button class="btn-approve" (click)="respond(u.id, 'APPROVED')">Odobri</button>
-					<button class="btn-reject" (click)="respond(u.id, 'REJECTED')">Odbij</button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+  <div class="card" *ngIf="!loading && pendingUsers().length > 0">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Korisničko ime</th>
+            <th>Ime i prezime</th>
+            <th>Email</th>
+            <th class="actions-col">Akcije</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of pendingUsers()">
+            <td>{{ u.username }}</td>
+            <td>{{ u.first_name }} {{ u.last_name }}</td>
+            <td>{{ u.email }}</td>
+            <td class="actions-col">
+              <button class="btn-approve" (click)="respond(u.id, 'APPROVED')">Odobri</button>
+              <button class="btn-reject" (click)="respond(u.id, 'REJECTED')">Odbij</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-	<div *ngIf="!loading && pendingUsers().length === 0">Nema novih zahteva.</div>
+  <div class="card empty-card" *ngIf="!loading && pendingUsers().length === 0">
+    <p class="empty-text">Nema novih zahteva za registraciju.</p>
+  </div>
 </div>

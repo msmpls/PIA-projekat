@@ -1,42 +1,41 @@
 <div class="home-container">
-
+  <!-- Simple stats banner -->
   <div class="stats-banner">
-    <h1>Ukupno aktivnih objekata: {{ homeData()!.totalFacilities }}</h1>
+    <span class="stats-number">{{ homeData()!.totalFacilities }}</span>
+    <span class="stats-label">aktivnih sportskih objekata</span>
   </div>
 
-  <h2>Najpopularniji objekti</h2>
-
-  <div class="top-facilities-grid">
-    <div class="card" *ngFor="let facility of homeData()!.topFacilities" (click)="goToFacility(facility.id)">
-      <h3>{{ facility.name }}</h3>
-      <p><strong>Grad:</strong> {{ facility.city }}</p>
-      <p><strong>Tip:</strong> {{ facility.type }}</p>
-      <p><strong>Cena/sat:</strong> {{ facility.price_per_hour }} RSD</p>
-      <p *ngIf="facility.likes !== undefined" class="likes">
-        👍 {{ facility.likes }} likes
-      </p>
-    </div>
-  </div>
-
-  <!-- Promocije sekcija -->
-  <div class="promotions-section" *ngIf="homeData()?.promotions?.length">
-    <h2>Aktuelne promocije</h2>
-    <div class="promotions-grid">
-      <div class="promo-card" *ngFor="let p of homeData()!.promotions">
-        <div class="promo-discount">
-          <span class="discount-value">-{{ p.discountPercent }}%</span>
-        </div>
-        <div class="promo-info">
-          <h3>{{ p.promotionName }}</h3>
-          <p class="promo-facility">Sport: {{ p.sportType }}</p>
-          <p class="promo-period">📅 {{ p.startDate | date:'dd.MM.yyyy' }} – {{ p.endDate | date:'dd.MM.yyyy' }}</p>
+  <!-- Top facilities -->
+  <section class="home-section">
+    <h2>Najpopularniji objekti</h2>
+    <div class="facilities-grid">
+      <div class="facility-card" *ngFor="let facility of homeData()!.topFacilities" (click)="goToFacility(facility.id)">
+        <h3>{{ facility.name }}</h3>
+        <p class="facility-city">{{ facility.city }}</p>
+        <div class="facility-meta">
+          <span class="meta-price">{{ facility.price_per_hour }} RSD/h</span>
+          <span class="meta-likes" *ngIf="facility.likes !== undefined">{{ facility.likes }} likes</span>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <p *ngIf="!loading() && !homeData()?.promotions?.length" class="no-promos">
+  <!-- Promotions -->
+  <section class="home-section" *ngIf="homeData()?.promotions?.length">
+    <h2>Aktuelne promocije</h2>
+    <div class="promos-grid">
+      <div class="promo-card" *ngFor="let p of homeData()!.promotions">
+        <span class="promo-badge">-{{ p.discountPercent }}%</span>
+        <div class="promo-details">
+          <h3>{{ p.promotionName }}</h3>
+          <p class="promo-sport">{{ p.sportType }}</p>
+          <p class="promo-dates">{{ p.startDate | date:'dd.MM' }} – {{ p.endDate | date:'dd.MM.yyyy' }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p *ngIf="!loading() && !homeData()?.promotions?.length" class="empty-text">
     Trenutno nema aktivnih promocija.
   </p>
-
 </div>

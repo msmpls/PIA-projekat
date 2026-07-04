@@ -1,142 +1,143 @@
-/* Glavni kontejner stranice */
 .home-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
 }
 
-/* Sekcija za statistiku (Baner) */
+/* Stats banner - minimalistic */
 .stats-banner {
-  background-color: #2563eb; /* Sportska plava */
-  color: white;
-  padding: 3rem;
-  border-radius: 12px;
-  text-align: center;
-  margin-bottom: 3rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.stats-banner h1 {
-  font-size: 2.5rem;
-  margin: 0;
-}
-
-/* Grid za Top 3 objekta */
-.top-facilities-grid {
-  display: grid;
-  /* Ovo znači: pravi kolone široke bar 300px, koliko god stane u red */
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-/* Stil kartice */
-.card {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
   background: white;
-  border: 1px solid #e5e7eb;
-  padding: 1.5rem;
-  border-radius: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
 }
 
-.card:hover {
-  transform: translateY(-5px); /* Efekat "lebdenja" kad pređeš mišem */
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2563eb;
+  line-height: 1;
 }
 
-.card h3 {
-  margin-top: 0;
-  color: #1e293b;
-  font-size: 1.25rem;
-}
-
-.card p {
+.stats-label {
+  font-size: 1rem;
   color: #64748b;
-  font-size: 0.95rem;
 }
 
-/* Responsivnost za mobilne telefone */
-@media (max-width: 600px) {
-  .stats-banner {
-    padding: 1.5rem;
-  }
-
-  .stats-banner h1 {
-    font-size: 1.8rem;
-  }
+/* Sections */
+.home-section {
+  margin-bottom: 2.5rem;
 }
 
-/* Promocije sekcija */
-.promotions-section {
-  margin-top: 3rem;
-}
-
-.promotions-section h2 {
+.home-section h2 {
+  font-size: 1.2rem;
   color: #0f172a;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.promotions-grid {
+/* Facility cards */
+.facilities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
+}
+
+.facility-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.facility-card:hover {
+  border-color: #2563eb;
+}
+
+.facility-card h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.facility-city {
+  color: #64748b;
+  font-size: 0.88rem;
+  margin: 0 0 0.75rem;
+}
+
+.facility-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.meta-price {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.meta-likes {
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* Promotions */
+.promos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
 }
 
 .promo-card {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: 1rem;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 0.625rem;
+  padding: 1rem 1.25rem;
 }
 
-.promo-discount {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #2563eb;
-  color: white;
-  padding: 1rem;
-  min-width: 70px;
+.promo-badge {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #2563eb;
+  white-space: nowrap;
 }
 
-.discount-value {
-  font-size: 1.15rem;
-  font-weight: 700;
+.promo-details h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+  color: #0f172a;
 }
 
-.promo-info {
-  padding: 1rem;
-  flex: 1;
-}
-
-.promo-info h3 {
-  margin: 0 0 0.35rem;
-  color: #1e293b;
-  font-size: 1rem;
-}
-
-.promo-facility {
+.promo-sport {
+  font-size: 0.82rem;
   color: #475569;
-  font-size: 0.85rem;
-  margin: 0.15rem 0;
+  margin: 0;
 }
 
-.promo-period {
+.promo-dates {
+  font-size: 0.78rem;
   color: #94a3b8;
-  font-size: 0.8rem;
   margin: 0.15rem 0 0;
 }
 
-.no-promos {
-  color: #64748b;
-  margin-top: 2rem;
+.empty-text {
+  color: #94a3b8;
+  font-style: italic;
+  margin-top: 1.5rem;
 }
 
-/* Likes prikaz na kartici */
-.card .likes {
-  color: #15803d;
-  font-weight: 600;
-  font-size: 0.85rem;
+@media (max-width: 600px) {
+  .home-container { padding: 1rem; }
+  .stats-banner { padding: 1.5rem; }
+  .stats-number { font-size: 2rem; }
 }

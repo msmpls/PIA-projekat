@@ -243,3 +243,98 @@ button:disabled {
     padding-top: 24px;
   }
 }
+
+/* DiceBear avatar generator */
+.avatar-generator {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.avatar-hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.avatar-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.avatar-controls select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.avatar-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.avatar-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.avatar-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+  object-fit: cover;
+}
+
+.avatar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.avatar-btn-sm {
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.avatar-btn-sm.primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.avatar-btn-sm:hover {
+  opacity: 0.85;
+}
+
+.avatar-saved {
+  font-size: 0.82rem;
+  color: #15803d;
+  margin: 0;
+}

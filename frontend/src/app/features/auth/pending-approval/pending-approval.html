@@ -1,5 +1,49 @@
-<div class="pending-container">
-  <h2>Vaša registracija je na čekanju</h2>
-  <p>Hvala na registraciji! Vaš zahtev je poslat administratoru na odobrenje. Bićete obavešteni kada nalog bude odobren.</p>
-  <p>Ako želite, možete pokušati da se prijavite kasnije kada nalog bude aktivan.</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.6"/>
+          <path d="M12 6V12L16 14" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span>SportSphere</span>
+      </div>
+      <h2>Registracija na čekanju</h2>
+    </div>
+
+    <div class="pending-body">
+      <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="#f59e0b" stroke-width="2"/>
+          <path d="M12 6V12L16 14" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <p class="greeting" *ngIf="username()">Zdravo, <strong>{{ username() }}</strong>!</p>
+
+      <p class="message">
+        Hvala na registraciji! Vaš zahtev je poslat administratoru na odobrenje.
+        Bićete obavešteni kada nalog bude aktivan.
+      </p>
+
+      <p class="submessage">
+        Nalog možete koristiti tek nakon što ga administrator odobri.
+        Prijavite se kasnije da proverite status.
+      </p>
+
+      <!-- Status check result -->
+      <div *ngIf="message()" class="status-toast" [class.success]="message()!.type === 'success'"
+           [class.error]="message()!.type === 'error'" [class.info]="message()!.type === 'info'">
+        {{ message()!.text }}
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button type="button" class="check-btn" (click)="checkStatus()" [disabled]="checking()">
+          {{ checking() ? 'Provera...' : 'Proveri status' }}
+        </button>
+        <a routerLink="/login" class="login-link" (click)="logout()">Nazad na prijavu</a>
+      </div>
+    </div>
+  </div>
 </div>

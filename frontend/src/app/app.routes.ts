@@ -36,6 +36,16 @@ export const routes: Routes = [
   },
 
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/auth/forgot-password/forgot-password').then(m => m.ForgotPassword)
+  },
+
+  {
+    path: 'reset-password/:token',
+    loadComponent: () => import('./features/auth/reset-password/reset-password').then(m => m.ResetPassword)
+  },
+
+  {
     path: 'pending-approval',
     loadComponent: () => import('./features/auth/pending-approval/pending-approval').then(m => m.PendingApproval)
   },
@@ -144,6 +154,20 @@ export const routes: Routes = [
   {
     path: 'admin/users',
     loadComponent: () => import('./features/admin/users/users').then(m => m.Users),
+    canActivate: [roleGuard],
+    data: { roles: ['ADMIN'] }
+  },
+
+  {
+    path: 'admin/trainers',
+    loadComponent: () => import('./features/admin/trainers/trainers').then(m => m.Trainers),
+    canActivate: [roleGuard],
+    data: { roles: ['ADMIN'] }
+  },
+
+  {
+    path: 'admin/sports',
+    loadComponent: () => import('./features/admin/sports/sports').then(m => m.Sports),
     canActivate: [roleGuard],
     data: { roles: ['ADMIN'] }
   },

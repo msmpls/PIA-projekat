@@ -86,17 +86,17 @@ h3 { color: #1e293b; font-size: 1.15rem; margin: 0 0 1rem; }
 
 /* Calendar grid */
 .calendar-wrapper { text-align: center; padding: 2rem; color: #64748b; }
-.calendar-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 2px; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 0.5rem; overflow: hidden; }
-.cal-cell { background: white; padding: 0.5rem 0.25rem; text-align: center; font-size: 0.78rem; min-height: 36px; display: flex; align-items: center; justify-content: center; }
-.cal-corner { background: #f1f5f9; font-weight: 700; color: #64748b; }
-.cal-day-header { background: #f8fafc; font-weight: 700; color: #475569; flex-direction: column; gap: 0.1rem; }
-.cal-day-header.is-today { background: rgba(37,99,235,0.1); color: #2563eb; }
-.cal-hour-label { background: #f8fafc; font-weight: 600; color: #64748b; }
-.cal-slot { cursor: default; transition: background 0.15s; }
-.cal-slot.clickable { cursor: pointer; background: rgba(34,197,94,0.08); }
+.calendar-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 3px; background: #cbd5e1; border: 2px solid #cbd5e1; border-radius: 0.5rem; overflow: hidden; }
+.cal-cell { background: #f8fafc; padding: 0.5rem 0.25rem; text-align: center; font-size: 0.78rem; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+.cal-corner { background: #e2e8f0; font-weight: 700; color: #475569; }
+.cal-day-header { background: #e2e8f0; font-weight: 700; color: #1e293b; flex-direction: column; gap: 0.1rem; }
+.cal-day-header.is-today { background: rgba(37,99,235,0.15); color: #2563eb; }
+.cal-hour-label { background: #e2e8f0; font-weight: 700; color: #475569; }
+.cal-slot { cursor: default; transition: background 0.15s; background: white; }
+.cal-slot.clickable { cursor: pointer; background: #f0fdf4; }
 .cal-slot.clickable:hover { background: rgba(37,99,235,0.2); }
-.cal-slot.occupied-confirmed { background: rgba(239,68,68,0.35); }
-.cal-slot.occupied-pending { background: rgba(245,158,11,0.35); }
+.cal-slot.occupied-confirmed { background: rgba(239,68,68,0.4); }
+.cal-slot.occupied-pending { background: rgba(245,158,11,0.4); }
 .cal-slot.selected { background: #2563eb !important; }
 .cal-slot.past { background: #f1f5f9; opacity: 0.5; }
 .slot-text { font-size: 0.72rem; font-weight: 600; }

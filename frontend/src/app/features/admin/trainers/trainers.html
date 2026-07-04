@@ -1,0 +1,52 @@
+<section class="trainers-container">
+  <h2>Evidencija trenera</h2>
+
+  <div *ngIf="message()" class="toast" [class.success]="message()?.type === 'success'"
+       [class.error]="message()?.type === 'error'">
+    {{ message()?.text }}
+  </div>
+
+  <div *ngIf="loading()" class="loading-state">Učitavanje trenera...</div>
+
+  <div *ngIf="!loading()" class="card">
+    <div class="table-wrapper">
+      <table class="trainers-table">
+        <thead>
+          <tr>
+            <th>Ime</th>
+            <th>Specijalizacija</th>
+            <th>Sport</th>
+            <th>Cena/sat</th>
+            <th>Ocena</th>
+            <th>Status</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let coach of coaches()">
+            <td class="cell-name">{{ coach.name }}</td>
+            <td>{{ coach.specialization || '—' }}</td>
+            <td>{{ coach.sport || '—' }}</td>
+            <td>{{ coach.price_per_hour }} RSD</td>
+            <td>{{ coach.average_rating ? coach.average_rating.toFixed(1) : '—' }}</td>
+            <td>
+              <span class="status-badge" [class.active]="coach.is_active" [class.inactive]="!coach.is_active">
+                {{ coach.is_active ? 'Aktivan' : 'Neaktivan' }}
+              </span>
+            </td>
+            <td>
+              <button *ngIf="coach.is_active" class="action-btn deactivate" (click)="toggleActive(coach)">
+                Deaktiviraj
+              </button>
+              <button *ngIf="!coach.is_active" class="action-btn activate" (click)="toggleActive(coach)">
+                Aktiviraj
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p *ngIf="!coaches().length" class="empty-state">Nema registrovanih trenera.</p>
+  </div>
+</section>

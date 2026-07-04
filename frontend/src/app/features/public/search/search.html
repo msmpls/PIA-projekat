@@ -22,6 +22,14 @@
       </select>
     </div>
 
+    <!-- Samo slobodni danas (samo za sportiste) -->
+    <div class="checkbox-row" *ngIf="isAthlete">
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="onlyFreeToday">
+        <span>Samo slobodni termini danas</span>
+      </label>
+    </div>
+
     <button type="submit">Pretraži</button>
   </form>
 
