@@ -30,10 +30,8 @@ public class PublicController {
         this.facilityRatingService = facilityRatingService;
     }
 
-    // =========================================================================
     // 1. PRETRAGA OBJEKATA (sa opcionalnim filterom po sportu)
     // GET /api/public/facilities?name=&city=&type=&sport=
-    // =========================================================================
     @GetMapping("/facilities")
     public ResponseEntity<List<Map<String, Object>>> searchFacilities(
             @RequestParam(value = "name", required = false) String name,
@@ -72,10 +70,8 @@ public class PublicController {
         return ResponseEntity.ok(facilities);
     }
 
-    // =========================================================================
     // 2. PODACI ZA POCETNU STRANU (ukupan broj + top 3 + 3 promocije)
     // GET /api/public/homepage
-    // =========================================================================
     @GetMapping("/homepage")
     public ResponseEntity<HomepageResponse> getHomepageData() {
         // 1. Broj svih odobrenih objekata
@@ -119,10 +115,8 @@ public class PublicController {
         return ResponseEntity.ok(response);
     }
 
-    // =========================================================================
     // 3. DETALJI OBJEKTA (objekat + tereni + lajkovi + galerija)
     // GET /api/public/facilities/{id}
-    // =========================================================================
     @GetMapping("/facilities/{facilityId}")
     public ResponseEntity<FacilityDetailsResponse> getFacilityDetails(@PathVariable Long facilityId) {
         // 1. Pronadji objekat (mora biti APPROVED)
@@ -161,19 +155,17 @@ public class PublicController {
         return ResponseEntity.ok(response);
     }
 
-    // =========================================================================
+
     // 4. JAVNI SAZETAK OCENA ZA OBJEKAT (lajkovi, komentari)
     // GET /api/public/facilities/{facilityId}/ratings
-    // =========================================================================
     @GetMapping("/facilities/{facilityId}/ratings")
     public ResponseEntity<RatingSummaryResponse> getFacilityRatings(@PathVariable Long facilityId) {
         return ResponseEntity.ok(facilityRatingService.getPublicSummary(facilityId));
     }
 
-    // =========================================================================
+    
     // 5. LISTA GRADOVA (za padajuci meni u pretrazi)
     // GET /api/public/cities
-    // =========================================================================
     @GetMapping("/cities")
     public ResponseEntity<List<String>> getCities() {
         String sql = "SELECT DISTINCT city FROM facilities WHERE status = 'APPROVED' ORDER BY city";

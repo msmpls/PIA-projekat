@@ -17,7 +17,7 @@ public class CourtRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
+    /*
      * 1. UPIS TERENA/HALE U BAZU
      * Koristi klasičan INSERT sa placeholderima (?) radi bezbednosti.
      */
@@ -35,7 +35,7 @@ public class CourtRepository {
                 court.getEquipment_description());
     }
 
-    /**
+    /*
      * 2. PRONALAŽENJE SVIH TERENA ZA ODREĐENI OBJEKAT
      * Koristi se kada se učitavaju detalji objekta da povučemo i sve njegove
      * terene.
@@ -66,7 +66,7 @@ public class CourtRepository {
         return count != null && count > 0;
     }
 
-    /**
+    /*
      * Vraca facility_id za dati court_id.
      */
     public Long getFacilityIdByCourtId(Long courtId) {

@@ -22,7 +22,7 @@ public class TrainingController {
         this.trainingService = trainingService;
     }
 
-    /**
+    /*
      * 1. PREGLED TRENERA PO OBJEKTU I SPORTU
      * Vraća trenere sa imenom, specijalizacijom, prosečnom ocenom i cenom po satu
      * GET http://localhost:8080/api/trainings/coaches?facility_id=1&sport=Tenis
@@ -35,7 +35,7 @@ public class TrainingController {
         return ResponseEntity.ok(coaches);
     }
 
-    /**
+    /*
      * 2. ZAKAZIVANJE TRENINGA PREKO FORME (Sada sa unetim court_id)
      * POST http://localhost:8080/api/trainings
      */
@@ -50,7 +50,7 @@ public class TrainingController {
         return ResponseEntity.ok("Trening je uspešno zakazan!");
     }
 
-    /**
+    /*
      * 3. PREGLED ARHIVE I ZAKAZANIH TRENINGA NA PROFILU (Sadrži i podatke o terenu)
      * GET http://localhost:8080/api/trainings/my
      */

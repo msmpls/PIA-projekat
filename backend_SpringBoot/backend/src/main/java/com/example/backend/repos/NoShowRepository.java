@@ -12,7 +12,7 @@ public class NoShowRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
+    /*
      * Vraca broj nedolazaka korisnika u objektu, ili 0 ako nema zapisa.
      */
     public int getNoShowCount(Long userId, Long facilityId) {
@@ -25,7 +25,7 @@ public class NoShowRepository {
         }
     }
 
-    /**
+    /*
      * Proverava da li je korisnik blokiran u objektu.
      */
     public boolean isUserBlocked(Long userId, Long facilityId) {

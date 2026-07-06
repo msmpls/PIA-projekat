@@ -19,7 +19,7 @@ public class FacilityRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
+    /*
      * Upisuje objekat u bazu i vraća njegov generisani ID.
      */
     public int save(Facility facility) {

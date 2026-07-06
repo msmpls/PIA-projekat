@@ -28,10 +28,9 @@ public class FacilityController {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * Endpoint koji podržava i File Upload (JSON fajl) i standardni unos sa forme.
-     * Ruta: POST /api/facilities/create
-     */
+    
+    // Endpoint koji podržava i File Upload (JSON fajl) i standardni unos sa forme.
+    // Ruta: POST /api/facilities/create
     @PostMapping("/create")
     public ResponseEntity<String> createFacility(
             @RequestParam("file") MultipartFile file, 
