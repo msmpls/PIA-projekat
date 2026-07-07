@@ -1,0 +1,21 @@
+=== BACKEND (Spring Boot 3.5.8, Java 25) ===
+Maven dependencies (pom.xml):
+- spring-boot-starter-web
+- spring-boot-starter-jdbc
+- spring-boot-starter-security
+- spring-boot-starter-validation
+- mysql-connector-j 9.5.0
+- jjwt-api/impl/jackson 0.12.6
+- lombok
+- openpdf 1.4.2 (https://github.com/LibrePDF/OpenPDF)
+
+=== FRONTEND (Angular 20.3, TypeScript 5.9) ===
+npm packages (package.json):
+- @angular/core, common, forms, router, platform-browser 20.3.0
+- rxjs 7.8, zone.js 0.15
+- Nema dodatnih biblioteka (charts su čisti CSS/SVG, DnD je native HTML5)
+
+Pokretanje:
+1. Backend: cd backend && mvn spring-boot:run
+2. Frontend: cd frontend && npm install && ng serve
+3. Baza: mysql -u root sportsphere_db < sportsphere_db.sql
