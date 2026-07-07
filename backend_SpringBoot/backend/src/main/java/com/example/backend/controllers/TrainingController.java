@@ -59,4 +59,10 @@ public class TrainingController {
         List<TrainingResponse> history = trainingService.getMyTrainings(principal.getName());
         return ResponseEntity.ok(history);
     }
+    // NOVO: Svi trenere u objektu (za coach preview kartice)
+    @GetMapping("/facility/{facilityId}/coaches")
+    public ResponseEntity<List<Coach>> getAllCoachesByFacility(@PathVariable Long facilityId) {
+        List<Coach> coaches = trainingService.getAllCoachesByFacility(facilityId);
+        return ResponseEntity.ok(coaches);
+    }
 }

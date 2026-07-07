@@ -16,14 +16,17 @@ public class FacilityRequest {
     private String address;
     private String description;
     private BigDecimal price_per_hour;
-    private String type; 
-    private String status; 
+    private String type;
+    private String status;
 
     // Radno vreme
-    private String work_start_time; 
-    private String work_end_time;   
+    private String work_start_time;
+    private String work_end_time;
 
-    // Podaci o firmi
+    // Broj dozvoljenih nedolazaka pre blokade
+    private Integer max_no_shows;
+
+    // Podaci o firmi (se automatski preuzimaju iz postojećeg objekta zaposlenog)
     private String company_name;
     private String company_address;
     private String company_id_number;
@@ -39,7 +42,7 @@ public class FacilityRequest {
         private String court_name;
         private String sport_type;
         private String type; // "OPENED" ili "CLOSED"
-        private int capacity; 
-        private String equipment_description; 
+        private int capacity;
+        private String equipment_description;
     }
 }

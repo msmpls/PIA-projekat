@@ -84,4 +84,9 @@ public class TrainingService {
         
         return trainingRepository.findAllTrainingsByUserId(user.getId());
     }
+
+    // NOVO: Svi trenere u objektu (za coach preview)
+    public List<Coach> getAllCoachesByFacility(Long facilityId) {
+        return coachRepository.findAllActiveByFacility(facilityId);
+    }
 }

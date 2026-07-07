@@ -19,13 +19,13 @@ public class FacilityRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /*
-     * Upisuje objekat u bazu i vraća njegov generisani ID.
+    /**
+     * Upisuje objekat u bazu i vraća broj zahvaćenih redova.
      */
     public int save(Facility facility) {
         String sql = "INSERT INTO facilities (name, city, address, description, price_per_hour, type, status, " +
-                     "created_by, company_name, company_address, company_id_number, pib, work_start_time, work_end_time) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "created_by, company_name, company_address, company_id_number, pib, work_start_time, work_end_time, max_no_shows) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         return jdbcTemplate.update(sql,
                 facility.getName(),
@@ -41,7 +41,8 @@ public class FacilityRepository {
                 facility.getCompany_id_number(),
                 facility.getPib(),
                 facility.getWork_start_time(),
-                facility.getWork_end_time());
+                facility.getWork_end_time(),
+                facility.getMax_no_shows() != null ? facility.getMax_no_shows() : 3);
     }
 
     public Optional<Facility> findById(Long id) {

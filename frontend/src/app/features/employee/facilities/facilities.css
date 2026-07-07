@@ -23,11 +23,30 @@
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
 .field label{display:block;font-size:0.82rem;color:#64748b;margin-bottom:0.25rem;font-weight:600}
 .field input,.field select,.field textarea{width:100%;padding:0.6rem;border:1px solid #d1d5db;border-radius:0.4rem;font-size:0.9rem;box-sizing:border-box;background:#fff;font-family:inherit}
-.field textarea{resize:vertical;min-height:70px}
+.field textarea{resize:vertical;min-height:60px}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
 .char-counter{font-size:0.78rem;color:#94a3b8;text-align:right;margin-top:0.2rem}
-.form-actions{display:flex;gap:0.5rem}
+.form-actions{display:flex;gap:0.5rem;margin-top:0.5rem}
 .primary-btn{padding:0.6rem 1.2rem;background:#2563eb;color:#fff;border:none;border-radius:0.4rem;cursor:pointer;font-weight:600;font-size:0.88rem}
 .primary-btn:disabled{opacity:.55;cursor:not-allowed}
-.empty-text{color:#94a3b8;font-style:italic;padding:1rem 0;margin:0}
+.empty-text{color:#94a3b8;font-style:italic;padding:1rem 0;margin:0;line-height:1.5}
+
+/* Company info display */
+.company-info{background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.5rem;padding:0.85rem 1rem;margin-bottom:1.25rem}
+.company-label{font-size:0.82rem;color:#64748b;font-weight:600;margin:0 0 0.5rem}
+.company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.35rem;font-size:0.85rem;color:#334155}
+.company-grid strong{color:#475569;font-weight:600}
+
+/* Courts section in facility creation form */
+.courts-section{margin-top:1rem}
+.courts-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem}
+.courts-header h4{margin:0;font-size:0.95rem;color:#1e293b}
+.add-court-btn{padding:0.35rem 0.85rem;border:1px solid #2563eb;border-radius:0.35rem;background:#fff;color:#2563eb;cursor:pointer;font-size:0.82rem;font-weight:600}
+.add-court-btn:hover{background:#2563eb;color:#fff}
+.court-row{background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.5rem;padding:1rem;margin-bottom:0.75rem}
+.court-row-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem}
+.court-num{font-weight:700;font-size:0.85rem;color:#475569}
+.remove-court-btn{padding:0.25rem 0.7rem;border:1px solid #ef4444;border-radius:0.3rem;background:#fff;color:#ef4444;cursor:pointer;font-size:0.78rem;font-weight:600}
+.remove-court-btn:hover{background:#ef4444;color:#fff}
+
 @media(max-width:600px){.fac-container{padding:1rem}}

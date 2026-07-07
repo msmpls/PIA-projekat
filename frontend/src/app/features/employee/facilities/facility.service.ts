@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EmployeeProfileResponse } from '../../../core/models/user.model';
-import { CourtRequest } from '../../../core/models/facility.model';
+import { CourtRequest, FacilityRequest } from '../../../core/models/facility.model';
 
 @Injectable({ providedIn: 'root' })
 export class FacilityService {
@@ -17,6 +17,10 @@ export class FacilityService {
     const fd = new FormData();
     fd.append('file', file);
     return this.http.post(`${this.base}/facilities/create`, fd, { responseType: 'text' });
+  }
+
+  createFacilityFromForm(request: FacilityRequest): Observable<string> {
+    return this.http.post(`${this.base}/facilities/create-form`, request, { responseType: 'text' });
   }
 
   addCourt(facilityId: number, court: CourtRequest): Observable<string> {

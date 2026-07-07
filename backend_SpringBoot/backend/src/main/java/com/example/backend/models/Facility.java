@@ -18,12 +18,14 @@ public class Facility {
     private String pib;
     private String work_start_time;
     private String work_end_time;
+    private Integer max_no_shows;
 
     public Facility() {}
 
-    public Facility(Long id, String name, String city, String address, String description, BigDecimal price_per_hour, 
-                    String type, String status, Long created_by, String company_name, String company_address, 
-                    String company_id_number, String pib, String work_start_time, String work_end_time) {
+    public Facility(Long id, String name, String city, String address, String description, BigDecimal price_per_hour,
+                    String type, String status, Long created_by, String company_name, String company_address,
+                    String company_id_number, String pib, String work_start_time, String work_end_time,
+                    Integer max_no_shows) {
         this.id = id;
         this.name = name;
         this.city = city;
@@ -39,6 +41,7 @@ public class Facility {
         this.pib = pib;
         this.work_start_time = work_start_time;
         this.work_end_time = work_end_time;
+        this.max_no_shows = max_no_shows;
     }
 
     // Getteri i Setteri
@@ -86,4 +89,7 @@ public class Facility {
 
     public String getWork_end_time() { return work_end_time; }
     public void setWork_end_time(String work_end_time) { this.work_end_time = work_end_time; }
+
+    public Integer getMax_no_shows() { return max_no_shows; }
+    public void setMax_no_shows(Integer max_no_shows) { this.max_no_shows = max_no_shows; }
 }

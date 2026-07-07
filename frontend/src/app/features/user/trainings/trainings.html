@@ -25,54 +25,68 @@
         </select>
       </div>
 
+      <!-- NOVO: Coach preview kartice -->
+      @if (selectedFacility() && allCoaches().length > 0) {
+        <div class="coach-preview">
+          <div class="preview-header">
+            <h4>Trenerski tim ({{ allCoaches().length }})</h4>
+            <span class="preview-hint">Kliknite na trenera da izaberete</span>
+          </div>
+          <div class="coach-cards-grid">
+            @for (c of allCoaches(); track c.id) {
+              <div
+                class="coach-card-mini"
+                [class.selected]="selectedCoachId() === c.id"
+                (click)="selectCoachFromCard(c)">
+                <div class="mini-avatar">{{ c.name.charAt(0) }}</div>
+                <div class="mini-info">
+                  <span class="mini-name">{{ c.name }}</span>
+                  <span class="mini-sport">{{ c.sport }}</span>
+                  <div class="mini-meta">
+                    <span class="mini-rating">★ {{ c.average_rating.toFixed(1) }}</span>
+                    <span class="mini-price">{{ c.price_per_hour }} RSD</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (selectedFacility() && allCoaches().length === 0) {
+        <p class="empty-hint">Ovaj objekat trenutno nema dostupnih trenera.</p>
+      }
+
       <div class="field">
         <label for="sport">Sport</label>
         <select
           id="sport"
           (change)="selectedSport.set($any($event.target).value); onSportChange()">
           <option value="">— Izaberite sport —</option>
-          @for (s of sports(); track s) {
+          @for (s of availableSports(); track s) {
             <option [value]="s">{{ s }}</option>
           }
         </select>
+        @if (selectedFacility() && availableSports().length > 0) {
+          <small class="field-hint">Dostupni sportovi: {{ availableSports().join(', ') }}</small>
+        }
       </div>
 
-      <!-- Coach cards -->
-      @if (coaches().length > 0) {
-        <div class="coach-list">
-          <p class="hint">Kliknite na trenera da ga izaberete:</p>
+      <!-- Coach dropdown (filtered by sport) -->
+      <div class="field">
+        <label for="coach">Trener</label>
+        <select id="coach" formControlName="coach">
+          <option [value]="0">— Izaberite trenera —</option>
           @for (c of coaches(); track c.id) {
-            <div
-              class="coach-card"
-              [class.selected]="selectedCoachId() === c.id"
-              (click)="selectCoach(c)">
-              <div class="coach-info">
-                <span class="coach-name">{{ c.name }}</span>
-                <span class="coach-spec">{{ c.specialization }}</span>
-              </div>
-              <div class="coach-meta">
-                <span class="coach-rating">★ {{ c.average_rating.toFixed(1) || '0.0' }}</span>
-                <span class="coach-price">{{ c.price_per_hour }} RSD/h</span>
-              </div>
-            </div>
+            <option [value]="c.id">{{ c.name }} ({{ c.specialization }})</option>
           }
-        </div>
-      }
+        </select>
+        @if (form.controls.coach.touched && form.controls.coach.invalid) {
+          <small class="err">Izaberite trenera.</small>
+        }
+      </div>
 
-      <form [formGroup]="form" (ngSubmit)="bookTraining()">
-        <div class="field">
-          <label for="coach">Trener</label>
-          <select id="coach" formControlName="coach">
-            <option [value]="0">— Izaberite trenera —</option>
-            @for (c of coaches(); track c.id) {
-              <option [value]="c.id">{{ c.name }} ({{ c.specialization }})</option>
-            }
-          </select>
-          @if (form.controls.coach.touched && form.controls.coach.invalid) {
-            <small class="err">Izaberite trenera.</small>
-          }
-        </div>
-
+      <form [formGroup]="form" (ngSubmit)="bookTraining()" class="booking-form">
         <div class="field">
           <label for="court">Teren</label>
           <select id="court" formControlName="court">

@@ -16,7 +16,7 @@
 
     <ng-container *ngIf="!loading()">
       <div class="table-wrapper"
-           *ngIf="profile() && profile()!.myFacilities && profile()!.myFacilities.length > 0; else noFacilities">
+           *ngIf="hasExistingFacility(); else noFacilities">
         <table class="data-table">
           <thead>
             <tr>
@@ -53,7 +53,136 @@
     </ng-container>
   </div>
 
-  <!-- Card 2: Add facility from JSON -->
+  <!-- Card 2: Add facility from form -->
+  <div class="card" *ngIf="hasExistingFacility()">
+    <h3>Dodaj novi objekat (forma)</h3>
+
+    <!-- Company info auto-filled display -->
+    <div class="company-info" *ngIf="getCompanyInfo() as company">
+      <p class="company-label">Podaci o firmi (automatski preuzeto iz vašeg postojećeg objekta):</p>
+      <div class="company-grid">
+        <div><strong>Firma:</strong> {{ company.name }}</div>
+        <div><strong>Adresa:</strong> {{ company.address }}</div>
+        <div><strong>MB:</strong> {{ company.mb }}</div>
+        <div><strong>PIB:</strong> {{ company.pib }}</div>
+      </div>
+    </div>
+
+    <form [formGroup]="facilityForm" (ngSubmit)="createFacilityFromForm()" class="facility-form">
+      <div class="form-grid">
+        <div class="field">
+          <label>Naziv objekta *</label>
+          <input type="text" formControlName="name" placeholder="npr. Sport Centar Nova">
+        </div>
+        <div class="field">
+          <label>Grad *</label>
+          <input type="text" formControlName="city" placeholder="npr. Beograd">
+        </div>
+        <div class="field">
+          <label>Adresa *</label>
+          <input type="text" formControlName="address" placeholder="npr. Bulevar 12">
+        </div>
+        <div class="field">
+          <label>Cena po satu (RSD) *</label>
+          <input type="number" formControlName="price_per_hour" min="1">
+        </div>
+        <div class="field">
+          <label>Tip objekta *</label>
+          <select formControlName="type">
+            <option value="CLOSED">Zatvoreni</option>
+            <option value="OPENED">Otvoreni</option>
+            <option value="SPORT_CENTER">Sportski centar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Početak rada *</label>
+          <input type="time" formControlName="work_start_time">
+        </div>
+        <div class="field">
+          <label>Kraj rada *</label>
+          <input type="time" formControlName="work_end_time">
+        </div>
+        <div class="field">
+          <label>Maks. nedolazaka *</label>
+          <input type="number" formControlName="max_no_shows" min="1" max="10">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Opis</label>
+        <textarea formControlName="description" rows="2" placeholder="Kratak opis objekta..."></textarea>
+      </div>
+
+      <!-- Dynamic courts -->
+      <div class="courts-section">
+        <div class="courts-header">
+          <h4>Tereni (barem 1 otvoreni sa kapacitetom 4+)</h4>
+          <button type="button" class="add-court-btn" (click)="addCourtRow()">+ Dodaj teren</button>
+        </div>
+
+        <div class="court-row" *ngFor="let court of courts(); let i = index; trackBy: trackByIndex">
+          <div class="court-row-header">
+            <span class="court-num">Teren #{{ i + 1 }}</span>
+            <button type="button" class="remove-court-btn" *ngIf="courts().length > 1" (click)="removeCourtRow(i)">Ukloni</button>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Naziv terena *</label>
+              <input type="text" [value]="court.court_name"
+                     (input)="updateCourtField(i, 'court_name', $any($event.target).value)"
+                     placeholder="npr. Glavni teren">
+            </div>
+            <div class="field">
+              <label>Sport *</label>
+              <select [value]="court.sport_type"
+                      (change)="updateCourtField(i, 'sport_type', $any($event.target).value)">
+                <option value="" disabled>Izaberite sport</option>
+                <option *ngFor="let s of sports()" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Tip *</label>
+              <select [value]="court.type"
+                      (change)="updateCourtField(i, 'type', $any($event.target).value)">
+                <option value="OPENED">Otvoreni</option>
+                <option value="CLOSED">Zatvoreni</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Kapacitet *</label>
+              <input type="number" [value]="court.capacity" min="1"
+                     (input)="updateCourtField(i, 'capacity', $any($event.target).value)">
+            </div>
+          </div>
+          <div class="field">
+            <label>Oprema (opis, max 300)</label>
+            <textarea [value]="court.equipment_description"
+                      (input)="updateCourtField(i, 'equipment_description', $any($event.target).value)"
+                      rows="2" maxlength="300" placeholder="npr. Koševi, mreže, reflektori..."></textarea>
+            <div class="char-counter">{{ getCourtEquipmentLength(i) }}/300</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="primary-btn" [disabled]="submitting()">
+          {{ submitting() ? 'Kreiranje...' : 'Kreiraj objekat' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Warning if no existing facility -->
+  <div class="card" *ngIf="!hasExistingFacility() && !loading()">
+    <h3>Dodaj novi objekat</h3>
+    <p class="empty-text">
+      Da biste kreirali novi objekat preko forme, morate prvo imati barem jedan postojeći objekat.
+      Podaci o firmi se automatski preuzimaju iz vašeg prvog objekta.
+      Možete koristiti JSON upload ispod kao alternativu.
+    </p>
+  </div>
+
+  <!-- Card 3: Add facility from JSON -->
   <div class="card">
     <h3>Dodaj objekat iz JSON fajla</h3>
     <div class="upload-row">
@@ -63,19 +192,18 @@
               [disabled]="!selectedJsonFile">Dodaj objekat</button>
     </div>
     <p class="hint">
-      JSON fajl mora sadržati <code>FacilityRequest</code> objekat sa poljima:
-      name, city, address, description, price_per_hour, type, work_start_time,
-      work_end_time, company_name, company_address, company_id_number, pib i
-      listu <code>courts</code> (court_name, sport_type, type [OPENED|CLOSED],
-      capacity, equipment_description).
+      JSON fajl sadrži podatke o objektu i terenima. Podaci o firmi se automatski preuzimaju
+      iz vašeg postojećeg objekta. Polja u JSON-u: name, city, address, description,
+      price_per_hour, type, work_start_time, work_end_time, max_no_shows i listu
+      <code>courts</code> (court_name, sport_type, type [OPENED|CLOSED], capacity, equipment_description).
     </p>
   </div>
 
-  <!-- Card 3: Add court -->
-  <div class="card">
-    <h3>Dodaj teren</h3>
+  <!-- Card 4: Add court to existing facility -->
+  <div class="card" *ngIf="hasExistingFacility()">
+    <h3>Dodaj teren u postojeći objekat</h3>
 
-    <div class="field facility-select-field" *ngIf="profile() && profile()!.myFacilities && profile()!.myFacilities.length > 0; else noFacilitiesForCourt">
+    <div class="field facility-select-field">
       <label>Objekat</label>
       <select (change)="onFacilityChange($event)">
         <option *ngFor="let f of profile()!.myFacilities"
@@ -85,12 +213,8 @@
         </option>
       </select>
     </div>
-    <ng-template #noFacilitiesForCourt>
-      <p class="empty-text">Nemate objekte kojima možete dodati teren.</p>
-    </ng-template>
 
-    <form [formGroup]="courtForm" (ngSubmit)="addCourt()" class="court-form"
-          *ngIf="profile() && profile()!.myFacilities && profile()!.myFacilities.length > 0">
+    <form [formGroup]="courtForm" (ngSubmit)="addCourt()" class="court-form">
       <div class="form-grid">
         <div class="field">
           <label>Naziv terena</label>
@@ -106,8 +230,8 @@
         <div class="field">
           <label>Tip</label>
           <select formControlName="type">
-            <option value="OPENED">OPENED</option>
-            <option value="CLOSED">CLOSED</option>
+            <option value="OPENED">Otvoreni</option>
+            <option value="CLOSED">Zatvoreni</option>
           </select>
         </div>
         <div class="field">

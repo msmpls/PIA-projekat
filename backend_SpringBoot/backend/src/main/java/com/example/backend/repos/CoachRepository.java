@@ -23,6 +23,15 @@ public class CoachRepository {
                      "AND f.status = 'APPROVED'";
         return jdbcTemplate.query(sql, new CoachRowMapper(), facilityId, sport);
     }
+      // NOVO: Svi aktivni trenere u objektu (svi sportovi)
+    public List<Coach> findAllActiveByFacility(Long facilityId) {
+        String sql = "SELECT c.* FROM coaches c " +
+                     "JOIN facilities f ON c.facility_id = f.id " +
+                     "WHERE c.facility_id = ? AND c.is_active = TRUE " +
+                     "AND f.status = 'APPROVED' " +
+                     "ORDER BY c.sport, c.name";
+        return jdbcTemplate.query(sql, new CoachRowMapper(), facilityId);
+    }
 
     public boolean isCoachInApprovedFacility(Long coachId) {
         String sql = "SELECT COUNT(*) FROM coaches c " +

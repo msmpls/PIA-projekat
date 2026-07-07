@@ -14,6 +14,11 @@ export class TrainingService {
     });
   }
 
+  // NOVO: Svi trenere u objektu (za coach preview)
+  getAllCoachesByFacility(facilityId: number): Observable<Coach[]> {
+    return this.http.get<Coach[]>(`${this.base}/trainings/facility/${facilityId}/coaches`);
+  }
+
   scheduleTraining(req: TrainingRequest): Observable<string> {
     return this.http.post(`${this.base}/trainings`, req, { responseType: 'text' });
   }

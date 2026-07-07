@@ -25,6 +25,8 @@ export class Trainings implements OnInit {
   facilities = signal<Facility[]>([]);
   sports = signal<string[]>([]);
   coaches = signal<Coach[]>([]);
+  allCoaches = signal<Coach[]>([]);  // NOVO: svi trenere objekta (za preview)
+  availableSports = signal<string[]>([]);  // NOVO: sportovi koji imaju trenere
   courts = signal<Court[]>([]);
   myTrainings = signal<TrainingResponse[]>([]);
   selectedFacility = signal<number | null>(null);
@@ -75,7 +77,10 @@ export class Trainings implements OnInit {
     // reset dependent state
     this.courts.set([]);
     this.coaches.set([]);
+    this.allCoaches.set([]);
+    this.availableSports.set([]);
     this.selectedCoachId.set(null);
+    this.selectedSport.set('');
     this.form.patchValue({ coach: 0, court: 0 });
 
     if (fid) {
@@ -84,11 +89,16 @@ export class Trainings implements OnInit {
         next: (data) => this.courts.set(data.courts || []),
         error: () => this.showMessage('error', 'Greška pri učitavanju terena.'),
       });
-      // load coaches if sport also selected
-      const sport = this.selectedSport();
-      if (sport) {
-        this.loadCoaches(fid, sport);
-      }
+      // NOVO: load all coaches for preview
+      this.trainingService.getAllCoachesByFacility(fid).subscribe({
+        next: (data) => {
+          this.allCoaches.set(data || []);
+          // Izvuci unikatne sportove koji imaju trenere
+          const sportSet = new Set((data || []).map(c => c.sport));
+          this.availableSports.set(Array.from(sportSet).sort());
+        },
+        error: () => this.allCoaches.set([]),
+      });
     }
   }
 
@@ -110,6 +120,36 @@ export class Trainings implements OnInit {
       next: (data) => this.coaches.set(data || []),
       error: () => this.showMessage('error', 'Greška pri učitavanju trenera.'),
     });
+  }
+
+   // Klik na coach preview karticu
+  selectCoachFromCard(coach: Coach): void {
+    // 1. Popuni sport signal i DOM
+    this.selectedSport.set(coach.sport);
+    const sportSelect = document.getElementById('sport') as HTMLSelectElement;
+    if (sportSelect) {
+      sportSelect.value = coach.sport;
+    }
+
+    // 2. Popuni trenera signal
+    this.selectedCoachId.set(coach.id);
+
+    // 3. Učitaj trenere za taj sport, pa ONDA popuni formu
+    const fid = this.selectedFacility();
+    if (fid) {
+      this.trainingService.getCoaches(fid, coach.sport).subscribe({
+        next: (data) => {
+          this.coaches.set(data || []);
+          // Koristi setTimeout da sačekaš Angular change detection
+          setTimeout(() => {
+            this.form.patchValue({ coach: coach.id });
+            // Skroluj do forme
+            document.querySelector('.booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
+        },
+        error: () => {}
+      });
+    }
   }
 
   selectCoach(coach: Coach): void {
@@ -156,7 +196,6 @@ export class Trainings implements OnInit {
 
   private padTime(t: string): string {
     if (!t) return '';
-    // t is "HH:MM" — pad to "HH:MM:00"
     if (t.length === 5) return `${t}:00`;
     return t;
   }
@@ -176,7 +215,6 @@ export class Trainings implements OnInit {
 
   formatTime(t: string): string {
     if (!t) return '';
-    // show HH:MM only
     return t.length >= 5 ? t.substring(0, 5) : t;
   }
 

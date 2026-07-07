@@ -24,6 +24,11 @@ public class FacilityRowMapper implements RowMapper<Facility> {
         f.setPib(rs.getString("pib"));
         f.setWork_start_time(rs.getString("work_start_time"));
         f.setWork_end_time(rs.getString("work_end_time"));
+        try {
+            f.setMax_no_shows(rs.getInt("max_no_shows"));
+        } catch (SQLException e) {
+            // Kolona mozda ne postoji u starijim upitima - ignorisi
+        }
         return f;
     }
 }

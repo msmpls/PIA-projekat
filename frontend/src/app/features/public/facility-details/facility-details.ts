@@ -4,14 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FacilityDetails as FacilityDetailsData } from '../../../core/models/facility-details.model';
 import { FacilityRatings } from '../../../shared/components/facility-ratings/facility-ratings';
-import { SafeUrlPipe } from '../../../shared/pipes/safe-url.pipe';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ReservationRequest } from '../../../core/models/reservation.model';
 
 @Component({
   selector: 'app-facility-details',
   standalone: true,
-  imports: [CommonModule, FacilityRatings, SafeUrlPipe],
+  imports: [CommonModule, FacilityRatings],
   templateUrl: './facility-details.html',
   styleUrl: './facility-details.css',
 })
@@ -32,26 +31,23 @@ export class FacilityDetails implements OnInit {
 
   // Calendar state
   currentCourtIndex = signal(0);
-  weekOffset = signal(0); // 0 = current week, -1 = previous, 1 = next
-  occupiedSlots = signal<Map<string, string>>(new Map()); // key = "YYYY-MM-DD_HH:00", value = "CONFIRMED" or "PENDING"
+  weekOffset = signal(0);
+  occupiedSlots = signal<Map<string, string>>(new Map());
   calendarLoading = signal(false);
   selectedSlot = signal<{ date: string; startHour: number } | null>(null);
   reservationMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Auth
   isAthlete = this.authService.getRole() === 'ATHLETE';
   isLoggedIn = this.authService.isLoggedIn();
 
-  // Computed: current court
   currentCourt = computed(() => {
     const courts = this.details()?.courts ?? [];
     return courts[this.currentCourtIndex()] ?? null;
   });
 
-  // Computed: week days (7 days starting from Monday of current week + offset)
   weekDays = computed(() => {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+    const dayOfWeek = today.getDay();
     const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(today);
     monday.setDate(today.getDate() + diffToMonday + this.weekOffset() * 7);
@@ -73,7 +69,6 @@ export class FacilityDetails implements OnInit {
     return days;
   });
 
-  // Computed: hours range from facility work hours
   hours = computed(() => {
     const f = this.details()?.facility;
     if (!f) return [];
@@ -115,7 +110,6 @@ export class FacilityDetails implements OnInit {
     });
   }
 
-  // ===== Court rotation =====
   rotateCourtLeft(): void {
     const courts = this.details()?.courts ?? [];
     if (courts.length === 0) return;
@@ -138,7 +132,6 @@ export class FacilityDetails implements OnInit {
     this.loadOccupiedSlots();
   }
 
-  // ===== Week navigation =====
   prevWeek(): void {
     this.weekOffset.update(v => v - 1);
     this.selectedSlot.set(null);
@@ -159,7 +152,6 @@ export class FacilityDetails implements OnInit {
     return `${first.getDate()}.${first.getMonth() + 1}. – ${last.getDate()}.${last.getMonth() + 1}.${last.getFullYear()}`;
   }
 
-  // ===== Slot loading =====
   loadOccupiedSlots(): void {
     const court = this.currentCourt();
     if (!court) return;
@@ -177,7 +169,7 @@ export class FacilityDetails implements OnInit {
             const startHour = parseInt(r.start_time.split(':')[0]);
             const endHour = parseInt(r.end_time.split(':')[0]);
             for (let h = startHour; h < endHour; h++) {
-              newMap.set(`${day.dateStr}_${h}:00`, r.status); // "CONFIRMED" or "PENDING"
+              newMap.set(`${day.dateStr}_${h}:00`, r.status);
             }
           }
           completed++;
@@ -223,7 +215,6 @@ export class FacilityDetails implements OnInit {
     this.reservationMessage.set(null);
   }
 
-  // ===== Reservation =====
   reserveSlot(): void {
     const sel = this.selectedSlot();
     const court = this.currentCourt();
@@ -256,15 +247,6 @@ export class FacilityDetails implements OnInit {
     this.selectedSlot.set(null);
   }
 
-  // ===== Map =====
-  getMapUrl(): string {
-    const f = this.details()?.facility;
-    if (!f) return '';
-    const query = encodeURIComponent(`${f.name}, ${f.address}, ${f.city}`);
-    return `https://www.openstreetmap.org/export/embed.html?bbox=&marker=&q=${query}`;
-  }
-
-  // ===== Helpers =====
   selectImage(img: string): void {
     this.selectedImage.set(img);
   }

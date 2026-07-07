@@ -16,6 +16,7 @@ export interface FacilityRequest {
   status?: string;
   work_start_time: string;
   work_end_time: string;
+  max_no_shows: number;
   company_name: string;
   company_address: string;
   company_id_number: string;
