@@ -11,6 +11,3 @@ LOGIN:
 - Sportista: maja/levi/gregor/cuna... / Sifra123!
 - Zaposleni: zaposleni1 / (vidi sportsphere_db.sql)
 - Admin: admin-login ruta (skrivena) / admin2 / (vidi SQL)/Admin123!
-
-Napomena: Proxy config (proxy.conf.json) je potreban za slike iz /uploads.
-EOF
